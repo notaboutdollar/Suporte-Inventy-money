@@ -89,6 +89,9 @@ img { display: block; max-width: 100%; }
 .soft { box-shadow: var(--shadow-soft); }
 .rowline:last-child { border-bottom: none !important; }
 
+summary { list-style: none; }
+summary::-webkit-details-marker { display: none; }
+
 .hr {
   height: 1px;
   border: 0;

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { CSSProperties, ReactNode } from "react";
+import { logout } from "@/lib/actions/auth";
 
 const NAV = [
   { href: "/", label: "Dashboard", icon: <IconDashboard /> },
@@ -92,39 +93,47 @@ export function Sidebar() {
           </button>
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            paddingTop: "var(--space-2)",
-            borderTop: "1px solid var(--color-neutral-200)",
-          }}
-        >
-          <div
+        <details>
+          <summary
             style={{
-              width: 38,
-              height: 38,
-              borderRadius: "var(--r-pill)",
-              background: "var(--color-accent-200)",
-              color: "var(--color-accent-800)",
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "var(--font-heading)",
-              fontWeight: 800,
-              fontSize: 13,
-              flex: "none",
+              gap: 10,
+              paddingTop: "var(--space-2)",
+              borderTop: "1px solid var(--color-neutral-200)",
+              cursor: "pointer",
             }}
           >
-            AM
-          </div>
-          <div style={{ lineHeight: 1.2, minWidth: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 600 }}>Ana Martins</div>
-            <div style={{ fontSize: 11, opacity: 0.55 }}>Gerente de Contas</div>
-          </div>
-          <IconChevronDown style={{ marginLeft: "auto", opacity: 0.5 }} />
-        </div>
+            <div
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: "var(--r-pill)",
+                background: "var(--color-accent-200)",
+                color: "var(--color-accent-800)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontFamily: "var(--font-heading)",
+                fontWeight: 800,
+                fontSize: 13,
+                flex: "none",
+              }}
+            >
+              AM
+            </div>
+            <div style={{ lineHeight: 1.2, minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 600 }}>Ana Martins</div>
+              <div style={{ fontSize: 11, opacity: 0.55 }}>Gerente de Contas</div>
+            </div>
+            <IconChevronDown style={{ marginLeft: "auto", opacity: 0.5 }} />
+          </summary>
+          <form action={logout} style={{ marginTop: "var(--space-2)" }}>
+            <button className="btn btn-secondary btn-block" type="submit" style={{ fontSize: 13, marginTop: 0 }}>
+              Sair
+            </button>
+          </form>
+        </details>
 
         <div style={{ display: "flex", alignItems: "center", gap: 8, opacity: 0.55, fontSize: 11 }}>
           <div

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/modernist-1b8c7023-d997-4cbf-a770-28c79e8969ee/styles.css">
+<script src="_ds/modernist-1b8c7023-d997-4cbf-a770-28c79e8969ee/_ds_bundle.js"></script>
+<style>
+  :root { --r-card: 24px; --r-md: 12px; --r-sm: 8px; --r-pill: 999px; --page-bg: #fafbff; }
+  body { background: var(--page-bg); }
+  a { color: var(--color-accent); }
+  a:hover { color: var(--color-accent-700); }
+  .soft { box-shadow: 0 10px 30px color-mix(in srgb, #2d2b2b 8%, transparent); }
+  .rowline:last-child { border-bottom: none !important; }
+</style>
+</helmet>
+<div style="display:flex;min-height:100vh;background:var(--page-bg);color:var(--color-text);font-size:15px">
+
+  <aside class="soft" style="width:262px;flex:none;display:flex;flex-direction:column;gap:var(--space-6);background:#ffffff;padding:var(--space-6) var(--space-4);border-radius:0 var(--r-card) var(--r-card) 0">
+    <div style="display:flex;align-items:center;gap:10px;padding:0 var(--space-2)">
+      <div style="width:36px;height:36px;background:var(--color-accent);border-radius:var(--r-sm);flex:none"></div>
+      <div style="line-height:1.02">
+        <div style="font-family:var(--font-heading);font-weight:800;font-size:17px">invent</div>
+        <div style="font-family:var(--font-heading);font-weight:800;font-size:17px;color:var(--color-accent)">money</div>
+      </div>
+    </div>
+
+    <nav style="display:flex;flex-direction:column;gap:var(--space-2)">
+      <button class="btn btn-block" onClick="{{ goDashboard }}" style="{{ navDashStyle }}">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right:10px"><rect x="3" y="3" width="7.5" height="9" rx="2"></rect><rect x="13.5" y="3" width="7.5" height="5.5" rx="2"></rect><rect x="13.5" y="11.5" width="7.5" height="9.5" rx="2"></rect><rect x="3" y="15" width="7.5" height="6" rx="2"></rect></svg>
+        Dashboard
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;opacity:0.55"><polyline points="9 6 15 12 9 18"></polyline></svg>
+      </button>
+      <button class="btn btn-block" onClick="{{ goHistorico }}" style="{{ navHistStyle }}">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right:10px"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15.5 14"></polyline></svg>
+        Histórico
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;opacity:0.55"><polyline points="9 6 15 12 9 18"></polyline></svg>
+      </button>
+      <button class="btn btn-block" onClick="{{ goSuporte }}" style="{{ navSupStyle }}">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right:10px"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3.5"></circle><line x1="5" y1="5" x2="8.3" y2="8.3"></line><line x1="15.7" y1="15.7" x2="19" y2="19"></line><line x1="19" y1="5" x2="15.7" y2="8.3"></line><line x1="8.3" y1="15.7" x2="5" y2="19"></line></svg>
+        Suporte
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;opacity:0.55"><polyline points="9 6 15 12 9 18"></polyline></svg>
+      </button>
+      <button class="btn btn-block" onClick="{{ goConfig }}" style="{{ navConfigStyle }}">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right:10px"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-2.9-1.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 4.6 15H4.4a2 2 0 1 1 0-4h.2a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 11.5 4h.1a2 2 0 1 1 4 0v.2a1.7 1.7 0 0 0 2.9 1.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.1a2 2 0 1 1 0 4h-.2Z"></path></svg>
+        Configurações
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;opacity:0.55"><polyline points="9 6 15 12 9 18"></polyline></svg>
+      </button>
+    </nav>
+
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:var(--space-4)">
+      <div style="background:var(--color-accent);color:#ffffff;border-radius:20px;padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-2)">
+        <div style="font-family:var(--font-heading);font-weight:800;font-size:16px;line-height:1.2">Upgrade para o<br>plano Business</div>
+        <div style="font-size:12px;opacity:0.9">Relatórios ilimitados e gerente dedicado.</div>
+        <button class="btn" style="background:#ffffff;color:var(--color-accent);border-radius:var(--r-pill);margin-top:var(--space-2);justify-content:flex-start">Fazer upgrade</button>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;padding-top:var(--space-2);border-top:1px solid var(--color-neutral-200)">
+        <div style="width:38px;height:38px;border-radius:var(--r-pill);background:var(--color-accent-200);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-weight:800;font-size:13px;flex:none">AM</div>
+        <div style="line-height:1.2;min-width:0">
+          <div style="font-size:13px;font-weight:600">Ana Martins</div>
+          <div style="font-size:11px;opacity:0.55">Gerente de Contas</div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;opacity:0.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+      <sc-if value="{{ showNido }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;align-items:center;gap:8px;opacity:0.55;font-size:11px">
+          <div style="width:10px;height:10px;border-radius:3px;background:var(--color-text);flex:none"></div>
+          <span>Gerenciado por <strong>NIDO</strong></span>
+        </div>
+      </sc-if>
+    </div>
+  </aside>
+
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column;padding:var(--space-8) var(--space-8) var(--space-8) var(--space-6)">
+    <header style="display:flex;align-items:center;gap:var(--space-6);flex-wrap:wrap;margin-bottom:var(--space-8)">
+      <div style="margin-right:auto">
+        <h2 style="margin:0 0 2px">{{ pageTitle }}</h2>
+        <div style="font-size:13px;opacity:0.55">Olá Ana, bem-vinda de volta 👋</div>
+      </div>
+      <div style="position:relative;width:300px">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:14px;top:12px;opacity:0.45"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input class="input soft" type="text" placeholder="Buscar clientes, pedidos..." style="padding-left:42px;min-height:42px;background:#ffffff;border:none;border-radius:var(--r-md)">
+      </div>
+      <button class="btn btn-icon soft" aria-label="Notificações" style="background:#ffffff;border-radius:var(--r-md);width:42px;height:42px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+      </button>
+    </header>
+
+    <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:var(--space-6)">
+
+        <div class="soft" style="background:#ffffff;border-radius:var(--r-card);padding:var(--space-6);display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-6);align-items:center">
+          <div style="display:flex;align-items:center;gap:var(--space-4);min-width:0">
+            <div style="width:74px;height:74px;border-radius:var(--r-pill);background:var(--color-accent-100);display:flex;align-items:center;justify-content:center;flex:none">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"></line><path d="M17 6.5H9.8a2.8 2.8 0 0 0 0 5.6h4.4a2.8 2.8 0 0 1 0 5.6H6.5"></path></svg>
+            </div>
+            <div>
+              <div style="font-size:13px;opacity:0.55;margin-bottom:2px">Faturamento (mês)</div>
+              <div style="font-family:var(--font-heading);font-weight:800;font-size:30px;line-height:1.1">R$ 89.400</div>
+              <div style="font-size:12px;margin-top:4px"><span style="color:var(--color-accent-700);font-weight:600">▲ 14,6%</span> <span style="opacity:0.5">vs mês anterior</span></div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:var(--space-4);min-width:0">
+            <div style="width:74px;height:74px;border-radius:var(--r-pill);background:var(--color-neutral-100);display:flex;align-items:center;justify-content:center;flex:none">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-800)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9.5" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.9"></path><path d="M16 3.1a4 4 0 0 1 0 7.8"></path></svg>
+            </div>
+            <div>
+              <div style="font-size:13px;opacity:0.55;margin-bottom:2px">Clientes ativos</div>
+              <div style="font-family:var(--font-heading);font-weight:800;font-size:30px;line-height:1.1">1.284</div>
+              <div style="font-size:12px;margin-top:4px"><span style="color:var(--color-accent-700);font-weight:600">▲ 8,2%</span> <span style="opacity:0.5">vs mês anterior</span></div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:var(--space-4);min-width:0">
+            <div style="width:74px;height:74px;border-radius:var(--r-pill);background:var(--color-neutral-100);display:flex;align-items:center;justify-content:center;flex:none">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-800)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.3 7 12 12 20.7 7"></polyline><line x1="12" y1="22" x2="12" y2="12"></line></svg>
+            </div>
+            <div>
+              <div style="font-size:13px;opacity:0.55;margin-bottom:2px">Ticket médio</div>
+              <div style="font-family:var(--font-heading);font-weight:800;font-size:30px;line-height:1.1">R$ 293</div>
+              <div style="font-size:12px;margin-top:4px"><span style="opacity:0.6;font-weight:600">▼ 1,4%</span> <span style="opacity:0.5">vs mês anterior</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:var(--space-6);align-items:stretch">
+
+          <div class="soft" style="background:#ffffff;border-radius:var(--r-card);padding:var(--space-6);min-width:0;flex:2 1 460px">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap;margin-bottom:var(--space-6)">
+              <div>
+                <h4 style="margin:0 0 2px">Faturamento mensal</h4>
+                <div style="font-size:12px;opacity:0.5">Últimos 12 meses</div>
+              </div>
+              <div class="seg" style="border-radius:var(--r-sm);border-color:var(--color-neutral-300)">
+                <label class="seg-opt"><input type="radio" name="chart-range" defaultChecked></input>Ano</label>
+                <label class="seg-opt"><input type="radio" name="chart-range"></input>Mês</label>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-end;gap:12px;height:230px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;height:100%;justify-content:flex-end"><div style="width:100%;height:98px;border-radius:var(--r-sm);background:var(--color-accent-100)"></div><span style="font-size:11px;opacity:0.5">Jan</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;height:100%;justify-content:flex-end"><div style="width:100%;height:126px;border-radius:var(--r-sm);background:var(--color-accent-100)"></div><span style="font-size:11px;opacity:0.5">Fev</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;height:100%;justify-content:flex-end"><div style="width:100%;height:156px;border-radius:var(--r-sm);background:var(--color-accent-100)"></div><span style="font-size:11px;opacity:0.5">Mar</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;height:100%;justify-content:flex-end"><div style="width:100%;height:116px;border-radius:var(--r-sm);background:var(--color-accent-100)"></div><span style="font-size:11px;opacity:0.5">Abr</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;height:100%;justify-content:flex-end"><div style="width:100%;height:84px;border-radius:var(--r-sm);background:var(--color-accent-100)"></div><span style="font-size:11px;opacity:0.5">Mai</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;height:100%;justify-content:flex-end"><div style="width:100%;height:116px;border-radius:var(--r-sm);background:var(--color-accent-100)"></div><span style="font-size:11px;opacity:0.5">Jun</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;height:100%;justify-content:flex-end">
+                <div style="background:var(--color-text);color:#ffffff;border-radius:var(--r-sm);padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap">R$ 89,4 mil</div>
+                <div style="width:100%;height:184px;border-radius:var(--r-sm);background:var(--color-accent)"></div>
+                <span style="font-size:11px;font-weight:600">Jul</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;height:100%;justify-content:flex-end"><div style="width:100%;height:160px;border-radius:var(--r-sm);background:var(--color-accent-100)"></div><span style="font-size:11px;opacity:0.5">Ago</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;height:100%;justify-content:flex-end"><div style="width:100%;height:134px;border-radius:var(--r-sm);background:var(--color-accent-100)"></div><span style="font-size:11px;opacity:0.5">Set</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;height:100%;justify-content:flex-end"><div style="width:100%;height:98px;border-radius:var(--r-sm);background:var(--color-accent-100)"></div><span style="font-size:11px;opacity:0.5">Out</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;height:100%;justify-content:flex-end"><div style="width:100%;height:148px;border-radius:var(--r-sm);background:var(--color-accent-100)"></div><span style="font-size:11px;opacity:0.5">Nov</span></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex:1;height:100%;justify-content:flex-end"><div style="width:100%;height:172px;border-radius:var(--r-sm);background:var(--color-accent-100)"></div><span style="font-size:11px;opacity:0.5">Dez</span></div>
+            </div>
+          </div>
+
+          <div class="soft" style="background:#ffffff;border-radius:var(--r-card);padding:var(--space-6);display:flex;flex-direction:column;align-items:center;gap:var(--space-4);min-width:0;flex:1 1 300px">
+            <div style="width:100%">
+              <h4 style="margin:0 0 2px">Clientes</h4>
+              <div style="font-size:12px;opacity:0.5">Distribuição por plano</div>
+            </div>
+            <div style="position:relative;width:min(200px,100%);aspect-ratio:1;flex:none;border-radius:var(--r-pill);background:conic-gradient(var(--color-accent) 0 62%, var(--color-accent-300) 62% 84%, var(--color-neutral-200) 84% 100%);display:flex;align-items:center;justify-content:center">
+              <div style="width:130px;height:130px;border-radius:var(--r-pill);background:#ffffff;display:flex;flex-direction:column;align-items:center;justify-content:center">
+                <div style="font-family:var(--font-heading);font-weight:800;font-size:26px;line-height:1.1">1.284</div>
+                <div style="font-size:11px;opacity:0.5">clientes ativos</div>
+              </div>
+            </div>
+            <div style="width:100%;display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-2)">
+              <div style="display:flex;align-items:center;gap:8px;font-size:13px"><span style="width:10px;height:10px;border-radius:3px;background:var(--color-accent);flex:none"></span>Business <strong style="margin-left:auto">62%</strong></div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:13px"><span style="width:10px;height:10px;border-radius:3px;background:var(--color-accent-300);flex:none"></span>Starter <strong style="margin-left:auto">22%</strong></div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:13px"><span style="width:10px;height:10px;border-radius:3px;background:var(--color-neutral-200);flex:none"></span>Trial <strong style="margin-left:auto">16%</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="soft" style="background:#ffffff;border-radius:var(--r-card);padding:var(--space-6)">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap;margin-bottom:var(--space-4)">
+            <div>
+              <h4 style="margin:0 0 2px">Últimas transações</h4>
+              <div style="font-size:12px;color:var(--color-accent-700)">1.284 clientes ativos este mês</div>
+            </div>
+            <div style="position:relative;width:230px">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:12px;top:11px;opacity:0.45"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input class="input" type="text" placeholder="Buscar transação" style="padding-left:36px;border-radius:var(--r-sm);background:var(--color-neutral-100);border-color:var(--color-neutral-200)">
+            </div>
+          </div>
+          <table class="table">
+            <thead><tr><th>Cliente</th><th>Produto</th><th>Data</th><th>Valor</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Fernanda Alves</td><td>Plano Business</td><td>12/08/2026</td><td>R$ 1.240,00</td><td><span class="tag" style="border-radius:var(--r-sm);border:1px solid var(--color-accent-700);color:var(--color-accent-700);padding:4px 14px">Pago</span></td></tr>
+              <tr><td>Marcos Teixeira</td><td>Consultoria</td><td>11/08/2026</td><td>R$ 680,00</td><td><span class="tag" style="border-radius:var(--r-sm);border:1px solid var(--color-neutral-500);color:var(--color-neutral-800);padding:4px 14px">Pendente</span></td></tr>
+              <tr><td>Julia Prado</td><td>Plano Starter</td><td>10/08/2026</td><td>R$ 249,00</td><td><span class="tag" style="border-radius:var(--r-sm);border:1px solid var(--color-accent-700);color:var(--color-accent-700);padding:4px 14px">Pago</span></td></tr>
+              <tr><td>Roberto Lima</td><td>Upgrade de Plano</td><td>09/08/2026</td><td>R$ 3.100,00</td><td><span class="tag" style="border-radius:var(--r-sm);border:1px solid var(--color-accent-700);color:var(--color-accent-700);padding:4px 14px">Pago</span></td></tr>
+              <tr><td>Camila Nunes</td><td>Plano Business</td><td>08/08/2026</td><td>R$ 1.240,00</td><td><span class="tag" style="border-radius:var(--r-sm);border:1px solid var(--color-neutral-400);color:var(--color-neutral-700);padding:4px 14px">Cancelado</span></td></tr>
+              <tr><td>Diego Souza</td><td>Consultoria</td><td>07/08/2026</td><td>R$ 950,00</td><td><span class="tag" style="border-radius:var(--r-sm);border:1px solid var(--color-accent-700);color:var(--color-accent-700);padding:4px 14px">Pago</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isHistorico }}" hint-placeholder-val="{{ false }}">
+      <div class="soft" style="background:#ffffff;border-radius:var(--r-card);padding:var(--space-6)">
+        <h4 style="margin:0 0 var(--space-4)">Atividades recentes</h4>
+        <div style="display:flex;flex-direction:column">
+          <div class="rowline" style="display:flex;justify-content:space-between;padding:var(--space-3) 0;border-bottom:1px solid var(--color-neutral-200)"><span>Login realizado</span><span style="font-size:12px;opacity:0.5">Hoje, 09:12</span></div>
+          <div class="rowline" style="display:flex;justify-content:space-between;padding:var(--space-3) 0;border-bottom:1px solid var(--color-neutral-200)"><span>Fatura #4821 paga</span><span style="font-size:12px;opacity:0.5">Hoje, 08:47</span></div>
+          <div class="rowline" style="display:flex;justify-content:space-between;padding:var(--space-3) 0;border-bottom:1px solid var(--color-neutral-200)"><span>Novo cliente cadastrado: Diego Souza</span><span style="font-size:12px;opacity:0.5">Ontem, 17:30</span></div>
+          <div class="rowline" style="display:flex;justify-content:space-between;padding:var(--space-3) 0;border-bottom:1px solid var(--color-neutral-200)"><span>Plano atualizado para Business</span><span style="font-size:12px;opacity:0.5">Ontem, 14:02</span></div>
+          <div class="rowline" style="display:flex;justify-content:space-between;padding:var(--space-3) 0;border-bottom:1px solid var(--color-neutral-200)"><span>Relatório mensal exportado</span><span style="font-size:12px;opacity:0.5">16/08, 11:15</span></div>
+          <div class="rowline" style="display:flex;justify-content:space-between;padding:var(--space-3) 0;border-bottom:1px solid var(--color-neutral-200)"><span>Senha alterada</span><span style="font-size:12px;opacity:0.5">15/08, 19:40</span></div>
+          <div class="rowline" style="display:flex;justify-content:space-between;padding:var(--space-3) 0;border-bottom:1px solid var(--color-neutral-200)"><span>Novo produto adicionado: Consultoria Premium</span><span style="font-size:12px;opacity:0.5">14/08, 10:05</span></div>
+          <div class="rowline" style="display:flex;justify-content:space-between;padding:var(--space-3) 0"><span>Login realizado</span><span style="font-size:12px;opacity:0.5">14/08, 08:58</span></div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isSuporte }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:var(--space-6)">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--space-6)">
+          <div class="soft" style="{{ emailCardStyle }}">
+            <div style="width:52px;height:52px;border-radius:var(--r-pill);background:var(--color-accent-100);display:flex;align-items:center;justify-content:center;margin-bottom:var(--space-3)">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="3"></rect><polyline points="3 7 12 13 21 7"></polyline></svg>
+            </div>
+            <div style="font-size:12px;opacity:0.5;margin-bottom:2px">E-mail</div>
+            <div style="font-family:var(--font-heading);font-weight:800;font-size:16px">suporte@inventmoney.com.br</div>
+            <div style="font-size:13px;opacity:0.6;margin-top:6px">Resposta em até 2h úteis</div>
+          </div>
+          <div class="soft" style="{{ phoneCardStyle }}">
+            <div style="width:52px;height:52px;border-radius:var(--r-pill);background:var(--color-neutral-100);display:flex;align-items:center;justify-content:center;margin-bottom:var(--space-3)">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-800)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"></path></svg>
+            </div>
+            <div style="font-size:12px;opacity:0.5;margin-bottom:2px">Telefone</div>
+            <div style="font-family:var(--font-heading);font-weight:800;font-size:16px">(11) 4002-8922</div>
+            <div style="font-size:13px;opacity:0.6;margin-top:6px">Seg–Sex, 9h às 18h</div>
+          </div>
+          <div class="soft" style="{{ chatCardStyle }}">
+            <div style="width:52px;height:52px;border-radius:var(--r-pill);background:var(--color-neutral-100);display:flex;align-items:center;justify-content:center;margin-bottom:var(--space-3)">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-neutral-800)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.9 9.9 0 0 1-4-.9L3 21l2-4a8.4 8.4 0 0 1-1-4 8.4 8.4 0 0 1 8.5-8.4h.5A8.4 8.4 0 0 1 21 11v.5Z"></path></svg>
+            </div>
+            <div style="font-size:12px;opacity:0.5;margin-bottom:2px">Chat ao vivo</div>
+            <div style="font-family:var(--font-heading);font-weight:800;font-size:16px">Fale agora</div>
+            <div style="font-size:13px;opacity:0.6;margin-top:6px">Seg–Sex, 9h às 18h</div>
+          </div>
+        </div>
+
+        <div class="soft" style="background:#ffffff;border-radius:var(--r-card);padding:var(--space-6)">
+          <h4 style="margin:0 0 var(--space-4)">Perguntas frequentes</h4>
+          <div style="display:flex;flex-direction:column">
+            <div class="rowline" style="padding:var(--space-3) 0;border-bottom:1px solid var(--color-neutral-200)"><div style="font-weight:600;margin-bottom:3px">Como altero meu plano?</div><div style="font-size:13px;opacity:0.65">Acesse Configurações → Empresa e selecione o novo plano.</div></div>
+            <div class="rowline" style="padding:var(--space-3) 0;border-bottom:1px solid var(--color-neutral-200)"><div style="font-weight:600;margin-bottom:3px">Como exporto meus relatórios financeiros?</div><div style="font-size:13px;opacity:0.65">No Dashboard, use o botão de exportação acima da tabela de transações.</div></div>
+            <div class="rowline" style="padding:var(--space-3) 0;border-bottom:1px solid var(--color-neutral-200)"><div style="font-weight:600;margin-bottom:3px">Como adiciono um novo cliente?</div><div style="font-size:13px;opacity:0.65">Vá até Histórico → Novo registro, ou fale com seu gerente de contas.</div></div>
+            <div class="rowline" style="padding:var(--space-3) 0"><div style="font-weight:600;margin-bottom:3px">Como falo com meu gerente de contas?</div><div style="font-size:13px;opacity:0.65">Use o e-mail ou telefone acima, ou o chat em horário comercial.</div></div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isConfig }}" hint-placeholder-val="{{ false }}">
+      <div class="soft" style="background:#ffffff;border-radius:var(--r-card);padding:var(--space-6);max-width:880px;display:flex;flex-direction:column">
+        <h4 style="margin:0 0 var(--space-4)">Perfil</h4>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)">
+          <div class="field"><label>Nome completo</label><input class="input" defaultValue="Ana Martins" style="border-radius:var(--r-sm);background:var(--color-neutral-100);border-color:var(--color-neutral-200)"></div>
+          <div class="field"><label>E-mail</label><input class="input" defaultValue="ana.martins@inventmoney.com.br" style="border-radius:var(--r-sm);background:var(--color-neutral-100);border-color:var(--color-neutral-200)"></div>
+          <div class="field"><label>Telefone</label><input class="input" defaultValue="(11) 98765-4321" style="border-radius:var(--r-sm);background:var(--color-neutral-100);border-color:var(--color-neutral-200)"></div>
+          <div class="field"><label>Cargo</label><input class="input" defaultValue="Gerente de Contas" style="border-radius:var(--r-sm);background:var(--color-neutral-100);border-color:var(--color-neutral-200)"></div>
+        </div>
+
+        <hr class="hr" style="height:1px;background:var(--color-neutral-200);margin:var(--space-6) 0">
+        <h4 style="margin:0 0 var(--space-4)">Empresa</h4>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)">
+          <div class="field"><label>Nome da empresa</label><input class="input" defaultValue="Invent Money" style="border-radius:var(--r-sm);background:var(--color-neutral-100);border-color:var(--color-neutral-200)"></div>
+          <div class="field"><label>CNPJ</label><input class="input" defaultValue="00.000.000/0001-00" style="border-radius:var(--r-sm);background:var(--color-neutral-100);border-color:var(--color-neutral-200)"></div>
+          <div class="field" style="grid-column:1 / -1"><label>Segmento</label><input class="input" defaultValue="Serviços Financeiros" style="border-radius:var(--r-sm);background:var(--color-neutral-100);border-color:var(--color-neutral-200)"></div>
+        </div>
+
+        <hr class="hr" style="height:1px;background:var(--color-neutral-200);margin:var(--space-6) 0">
+        <h4 style="margin:0 0 var(--space-4)">Notificações</h4>
+        <div style="display:flex;flex-direction:column;gap:var(--space-3)">
+          <div style="display:flex;align-items:center;justify-content:space-between;max-width:480px">
+            <span style="font-size:14px">Notificações por e-mail</span>
+            <div class="seg" style="border-radius:var(--r-sm);border-color:var(--color-neutral-300)">
+              <label class="seg-opt"><input type="radio" name="notif-email" defaultChecked></input>Ativado</label>
+              <label class="seg-opt"><input type="radio" name="notif-email"></input>Desativado</label>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;max-width:480px">
+            <span style="font-size:14px">Alertas de faturamento</span>
+            <div class="seg" style="border-radius:var(--r-sm);border-color:var(--color-neutral-300)">
+              <label class="seg-opt"><input type="radio" name="notif-billing" defaultChecked></input>Ativado</label>
+              <label class="seg-opt"><input type="radio" name="notif-billing"></input>Desativado</label>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;max-width:480px">
+            <span style="font-size:14px">Resumo semanal</span>
+            <div class="seg" style="border-radius:var(--r-sm);border-color:var(--color-neutral-300)">
+              <label class="seg-opt"><input type="radio" name="notif-weekly"></input>Ativado</label>
+              <label class="seg-opt"><input type="radio" name="notif-weekly" defaultChecked></input>Desativado</label>
+            </div>
+          </div>
+        </div>
+
+        <hr class="hr" style="height:1px;background:var(--color-neutral-200);margin:var(--space-6) 0">
+        <h4 style="margin:0 0 var(--space-3)">Gerenciamento</h4>
+        <div style="display:flex;align-items:center;gap:var(--space-3);background:var(--color-neutral-100);border-radius:var(--r-md);padding:var(--space-4)">
+          <div style="width:14px;height:14px;border-radius:4px;background:var(--color-text);flex:none"></div>
+          <div style="font-size:13px">Esta conta é operada e mantida pela <strong>NIDO</strong> em nome da Invent Money.</div>
+          <button class="btn btn-ghost" style="margin-left:auto">Ver termos</button>
+        </div>
+
+        <div style="display:flex;gap:var(--space-3);margin-top:var(--space-6)">
+          <button class="btn btn-primary" style="border-radius:var(--r-sm)">Salvar alterações</button>
+          <button class="btn btn-secondary" style="border-radius:var(--r-sm)">Cancelar</button>
+        </div>
+      </div>
+    </sc-if>
+
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:940},&quot;defaultTab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;dashboard&quot;,&quot;options&quot;:[&quot;dashboard&quot;,&quot;historico&quot;,&quot;suporte&quot;,&quot;config&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Comportamento&quot;},&quot;showNidoCredit&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Comportamento&quot;},&quot;highlightChannel&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;chat&quot;,&quot;options&quot;:[&quot;email&quot;,&quot;telefone&quot;,&quot;chat&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Comportamento&quot;}}">
+class Component extends DCLogic {
+  state = { tab: this.props.defaultTab || 'dashboard' };
+
+  renderVals() {
+    const tab = this.state.tab;
+    const set = (t) => () => this.setState({ tab: t });
+    const navStyle = (key) => tab === key
+      ? { background: 'var(--color-accent)', color: '#ffffff', borderRadius: 'var(--r-sm)' }
+      : { background: 'transparent', color: 'var(--color-neutral-700)', borderRadius: 'var(--r-sm)' };
+    const highlight = this.props.highlightChannel ?? 'chat';
+    const cardStyle = (key) => ({
+      background: '#ffffff',
+      borderRadius: 'var(--r-card)',
+      padding: 'var(--space-6)',
+      border: highlight === key ? '2px solid var(--color-accent)' : '2px solid transparent',
+    });
+    const titles = { dashboard: 'Dashboard', historico: 'Histórico', suporte: 'Suporte', config: 'Configurações' };
+
+    return {
+      isDashboard: tab === 'dashboard',
+      isHistorico: tab === 'historico',
+      isSuporte: tab === 'suporte',
+      isConfig: tab === 'config',
+      pageTitle: titles[tab],
+      goDashboard: set('dashboard'),
+      goHistorico: set('historico'),
+      goSuporte: set('suporte'),
+      goConfig: set('config'),
+      navDashStyle: navStyle('dashboard'),
+      navHistStyle: navStyle('historico'),
+      navSupStyle: navStyle('suporte'),
+      navConfigStyle: navStyle('config'),
+      showNido: this.props.showNidoCredit ?? true,
+      emailCardStyle: cardStyle('email'),
+      phoneCardStyle: cardStyle('telefone'),
+      chatCardStyle: cardStyle('chat'),
+    };
+  }
+}
+</script>
+</body>
+</html>

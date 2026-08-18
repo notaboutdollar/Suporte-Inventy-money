@@ -4,10 +4,12 @@
 Sistema interno de suporte pra triagem de tickets da comunidade de trainers da Invent Money. Uso interno: Dollar (admin), Brida (admin), moderadores (agente). Não é público.
 
 ## Stack
-- Next.js 15 (App Router, TypeScript, Server Components por padrão)
-- Supabase (Postgres + Auth + Storage)
-- Tailwind + shadcn/ui
+- Next.js 16 (App Router, TypeScript, Server Components por padrão, Turbopack)
+- React 19
+- Tailwind v4 (CSS-first config em `app/globals.css`, sem `tailwind.config.js`)
+- Supabase (Postgres + Auth + Storage) — a instalar quando for hora
 - Vercel deploy
+- Sem shadcn/ui — o design system Modernist já traz `.btn`, `.input`, `.card`, `.table` etc.
 
 ## Regras de trabalho
 - Menos código > mais código. Não crie abstrações antes da terceira repetição.

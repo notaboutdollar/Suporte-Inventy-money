@@ -1,10 +1,11 @@
 export type TicketCategory =
-  | "top_up"
-  | "bonus"
-  | "cartao"
-  | "cadastro"
+  | "tarefa_sumiu"
+  | "erro_gravacao"
+  | "rejeicao_tarefa"
+  | "saque"
+  | "perfil_dados"
+  | "indicacao"
   | "kyc"
-  | "conta_restrita"
   | "outro";
 
 export type TicketStatus =
@@ -15,14 +16,37 @@ export type TicketStatus =
   | "fechado";
 
 export const CATEGORY_LABELS: Record<TicketCategory, string> = {
-  top_up: "Top-up",
-  bonus: "Bônus",
-  cartao: "Cartão",
-  cadastro: "Cadastro",
+  tarefa_sumiu: "Tarefa sumiu",
+  erro_gravacao: "Erro na gravação",
+  rejeicao_tarefa: "Rejeição de tarefa",
+  saque: "Saque",
+  perfil_dados: "Perfil de dados",
+  indicacao: "Indicação",
   kyc: "KYC",
-  conta_restrita: "Conta restrita",
   outro: "Outro",
 };
+
+export const CATEGORY_COLORS: Record<TicketCategory, string> = {
+  tarefa_sumiu: "#ec3013",
+  erro_gravacao: "#e88b1a",
+  rejeicao_tarefa: "#8b5cf6",
+  saque: "#22a06b",
+  perfil_dados: "#3b82f6",
+  indicacao: "#0ea5e9",
+  kyc: "#eab308",
+  outro: "#9b9797",
+};
+
+export const CATEGORY_ORDER: TicketCategory[] = [
+  "tarefa_sumiu",
+  "erro_gravacao",
+  "rejeicao_tarefa",
+  "saque",
+  "perfil_dados",
+  "indicacao",
+  "kyc",
+  "outro",
+];
 
 export const STATUS_LABELS: Record<TicketStatus, string> = {
   solicitado: "Solicitado",
@@ -39,6 +63,11 @@ export const STATUS_ORDER: TicketStatus[] = [
   "resolvido",
   "fechado",
 ];
+
+export type Profile = {
+  id: string;
+  name: string;
+};
 
 export type Ticket = {
   id: string;

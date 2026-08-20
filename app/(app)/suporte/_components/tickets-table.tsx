@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Ticket, TicketStatus } from "@/lib/tickets";
-import { CATEGORY_LABELS, STATUS_LABELS, STATUS_ORDER } from "@/lib/tickets";
+import { CATEGORY_COLORS, CATEGORY_LABELS, STATUS_LABELS, STATUS_ORDER } from "@/lib/tickets";
 
 const STATUS_TAG_STYLE: Record<TicketStatus, { border: string; color: string }> = {
   solicitado: { border: "var(--color-neutral-400)", color: "var(--color-neutral-700)" },
@@ -12,6 +12,16 @@ const STATUS_TAG_STYLE: Record<TicketStatus, { border: string; color: string }> 
 
 function formatDate(iso: string) {
   return new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(iso));
+}
+
+function elapsed(iso: string) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}min`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  return `${days}d`;
 }
 
 export function TicketsTable({ tickets, activeStatus }: { tickets: Ticket[]; activeStatus?: TicketStatus }) {
@@ -27,7 +37,7 @@ export function TicketsTable({ tickets, activeStatus }: { tickets: Ticket[]; act
           marginBottom: "var(--space-4)",
         }}
       >
-        <h4 style={{ margin: 0 }}>Tickets</h4>
+        <h4 style={{ margin: 0 }}>Todos os tickets</h4>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <StatusFilterLink label="Todos" href="/suporte" active={!activeStatus} />
           {STATUS_ORDER.map((status) => (
@@ -42,7 +52,9 @@ export function TicketsTable({ tickets, activeStatus }: { tickets: Ticket[]; act
       </div>
 
       {tickets.length === 0 ? (
-        <p style={{ opacity: 0.6, fontSize: 14, margin: 0 }}>Nenhum ticket encontrado.</p>
+        <p style={{ opacity: 0.6, fontSize: 14, margin: 0, padding: "var(--space-6) 0", textAlign: "center" }}>
+          Nenhum ticket encontrado.
+        </p>
       ) : (
         <table className="table">
           <thead>
@@ -51,7 +63,8 @@ export function TicketsTable({ tickets, activeStatus }: { tickets: Ticket[]; act
               <th>Categoria</th>
               <th>Descrição</th>
               <th>Responsável</th>
-              <th>Aberto em</th>
+              <th>Aberto</th>
+              <th>Tempo</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -61,12 +74,26 @@ export function TicketsTable({ tickets, activeStatus }: { tickets: Ticket[]; act
               return (
                 <tr key={t.id}>
                   <td>{t.telegram_handle || t.email || "—"}</td>
-                  <td>{CATEGORY_LABELS[t.category]}</td>
+                  <td>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                      <span
+                        style={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: "var(--r-pill)",
+                          background: CATEGORY_COLORS[t.category],
+                          flex: "none",
+                        }}
+                      />
+                      {CATEGORY_LABELS[t.category]}
+                    </span>
+                  </td>
                   <td style={{ maxWidth: 280, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {t.description}
                   </td>
-                  <td>{t.assignee?.name ?? "Não atribuído"}</td>
+                  <td>{t.assignee?.name ?? "—"}</td>
                   <td>{formatDate(t.created_at)}</td>
+                  <td style={{ opacity: 0.65 }}>{elapsed(t.created_at)}</td>
                   <td>
                     <span
                       className="tag"

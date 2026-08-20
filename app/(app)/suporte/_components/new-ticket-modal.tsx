@@ -1,6 +1,7 @@
 "use client";
 
 import { useImperativeHandle, useRef, useState, forwardRef } from "react";
+import { useRouter } from "next/navigation";
 import { createTicket, deleteTicket, updateTicket } from "@/lib/actions/tickets";
 import {
   CATEGORY_LABELS,
@@ -31,6 +32,7 @@ export const TicketModal = forwardRef<TicketModalHandle, { profiles: Profile[] }
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ticket, setTicket] = useState<Ticket | null>(null);
+  const router = useRouter();
 
   const isEdit = ticket !== null;
 
@@ -62,6 +64,7 @@ export const TicketModal = forwardRef<TicketModalHandle, { profiles: Profile[] }
       }
       formRef.current?.reset();
       close();
+      router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erro ao salvar ticket");
     } finally {
@@ -77,6 +80,7 @@ export const TicketModal = forwardRef<TicketModalHandle, { profiles: Profile[] }
     try {
       await deleteTicket(ticket.id);
       close();
+      router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erro ao excluir ticket");
     } finally {

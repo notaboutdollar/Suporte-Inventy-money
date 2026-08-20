@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { TicketCategory, TicketStatus } from "@/lib/tickets";
 
@@ -63,7 +62,6 @@ export async function createTicket(formData: FormData) {
     console.error("[createTicket] event insert failed:", eventError);
   }
 
-  revalidatePath("/suporte");
 }
 
 export async function updateTicket(id: string, formData: FormData) {
@@ -92,7 +90,6 @@ export async function updateTicket(id: string, formData: FormData) {
   const { error } = await supabase.from("tickets").update(updatePayload).eq("id", id);
   if (error) throw new Error(error.message);
 
-  revalidatePath("/suporte");
 }
 
 export async function updateTicketStatus(id: string, status: TicketStatus) {
@@ -110,7 +107,6 @@ export async function updateTicketStatus(id: string, status: TicketStatus) {
     payload: { from: previous?.status ?? null, to: status },
   });
 
-  revalidatePath("/suporte");
 }
 
 export async function deleteTicket(id: string) {
@@ -123,7 +119,6 @@ export async function deleteTicket(id: string) {
   if (count === 0) {
     throw new Error("Sem permissão pra excluir. Apenas admins podem excluir tickets.");
   }
-  revalidatePath("/suporte");
 }
 
 export async function updateTicketAssignee(id: string, assigneeId: string | null) {
@@ -139,5 +134,4 @@ export async function updateTicketAssignee(id: string, assigneeId: string | null
     payload: { assignee_id: assigneeId },
   });
 
-  revalidatePath("/suporte");
 }

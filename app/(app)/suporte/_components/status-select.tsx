@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { updateTicketStatus } from "@/lib/actions/tickets";
 import { STATUS_LABELS, STATUS_ORDER, STATUS_TAG_STYLE, type TicketStatus } from "@/lib/tickets";
 
 export function StatusSelect({ ticketId, value }: { ticketId: string; value: TicketStatus }) {
   const [current, setCurrent] = useState<TicketStatus>(value);
   const [pending, startTransition] = useTransition();
+  const router = useRouter();
   const style = STATUS_TAG_STYLE[current];
 
   return (
@@ -19,6 +21,7 @@ export function StatusSelect({ ticketId, value }: { ticketId: string; value: Tic
         startTransition(async () => {
           try {
             await updateTicketStatus(ticketId, next);
+            router.refresh();
           } catch {
             setCurrent(value);
           }

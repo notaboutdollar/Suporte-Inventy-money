@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { updateTicketAssignee } from "@/lib/actions/tickets";
 import type { Profile } from "@/lib/tickets";
 
@@ -15,6 +16,7 @@ export function AssigneeSelect({
 }) {
   const [current, setCurrent] = useState<string | null>(value);
   const [pending, startTransition] = useTransition();
+  const router = useRouter();
 
   return (
     <select
@@ -26,6 +28,7 @@ export function AssigneeSelect({
         startTransition(async () => {
           try {
             await updateTicketAssignee(ticketId, next);
+            router.refresh();
           } catch {
             setCurrent(value);
           }

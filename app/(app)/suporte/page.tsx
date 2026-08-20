@@ -16,7 +16,7 @@ export default async function SuportePage({
 
   let ticketsQuery = supabase
     .from("tickets")
-    .select("id, telegram_handle, email, category, description, status, created_at, assignee:profiles(name)")
+    .select("id, whatsapp, email, category, description, status, created_at, assignee:profiles(name)")
     .order("created_at", { ascending: false });
 
   if (status) {

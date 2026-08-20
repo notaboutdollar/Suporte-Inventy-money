@@ -71,7 +71,7 @@ export type Profile = {
 
 export type Ticket = {
   id: string;
-  telegram_handle: string | null;
+  whatsapp: string | null;
   email: string | null;
   category: TicketCategory;
   description: string;

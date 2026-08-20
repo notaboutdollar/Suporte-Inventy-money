@@ -73,7 +73,7 @@ export function TicketsTable({ tickets, activeStatus }: { tickets: Ticket[]; act
               const tag = STATUS_TAG_STYLE[t.status];
               return (
                 <tr key={t.id}>
-                  <td>{t.telegram_handle || t.email || "—"}</td>
+                  <td>{t.whatsapp || t.email || "—"}</td>
                   <td>
                     <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
                       <span

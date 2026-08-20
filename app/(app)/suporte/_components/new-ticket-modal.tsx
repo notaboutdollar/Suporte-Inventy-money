@@ -52,26 +52,25 @@ export function NewTicketModal({ profiles }: { profiles: Profile[] }) {
 
       <dialog
         ref={dialogRef}
+        className="soft"
         style={{
           border: "none",
           borderRadius: "var(--r-card)",
-          padding: 0,
-          background: "transparent",
+          padding: "var(--space-6)",
+          background: "#ffffff",
+          color: "var(--color-text)",
           maxWidth: 540,
           width: "calc(100vw - 32px)",
+          maxHeight: "calc(100vh - 32px)",
+          margin: "auto",
+          overflow: "auto",
         }}
       >
         <div
-          className="soft"
           style={{
-            background: "#ffffff",
-            borderRadius: "var(--r-card)",
-            padding: "var(--space-6)",
             display: "flex",
             flexDirection: "column",
             gap: "var(--space-4)",
-            maxHeight: "calc(100vh - 32px)",
-            overflowY: "auto",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -100,15 +99,15 @@ export function NewTicketModal({ profiles }: { profiles: Profile[] }) {
             style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}
           >
             <div className="field">
-              <label htmlFor="telegram_handle">
-                Handle do Telegram <span style={{ color: "var(--color-accent)" }}>*</span>
+              <label htmlFor="whatsapp">
+                WhatsApp <span style={{ color: "var(--color-accent)" }}>*</span>
               </label>
               <input
                 className="input"
-                id="telegram_handle"
-                name="telegram_handle"
+                id="whatsapp"
+                name="whatsapp"
                 type="text"
-                placeholder="@usuario"
+                placeholder="+55 11 98765-4321"
                 required
               />
             </div>

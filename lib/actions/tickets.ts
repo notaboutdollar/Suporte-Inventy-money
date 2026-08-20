@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { TicketCategory, TicketStatus } from "@/lib/tickets";
 
 export async function createTicket(formData: FormData) {
-  const telegram_handle = (formData.get("telegram_handle") as string) || null;
+  const whatsapp = (formData.get("whatsapp") as string) || null;
   const email = (formData.get("email") as string) || null;
   const category = formData.get("category") as TicketCategory;
   const description = formData.get("description") as string;
@@ -20,7 +20,7 @@ export async function createTicket(formData: FormData) {
   } = await supabase.auth.getUser();
 
   const insertPayload: Record<string, unknown> = {
-    telegram_handle,
+    whatsapp,
     email,
     category,
     description,

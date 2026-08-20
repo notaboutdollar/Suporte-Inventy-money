@@ -42,37 +42,6 @@ export function Sidebar() {
       </nav>
 
       <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-        <div
-          style={{
-            background: "var(--color-accent)",
-            color: "#ffffff",
-            borderRadius: 20,
-            padding: "var(--space-4)",
-            display: "flex",
-            flexDirection: "column",
-            gap: "var(--space-2)",
-          }}
-        >
-          <div style={{ fontFamily: "var(--font-heading)", fontWeight: 800, fontSize: 16, lineHeight: 1.2 }}>
-            Upgrade para o
-            <br />
-            plano Business
-          </div>
-          <div style={{ fontSize: 12, opacity: 0.9 }}>Relatórios ilimitados e gerente dedicado.</div>
-          <button
-            className="btn"
-            style={{
-              background: "#ffffff",
-              color: "var(--color-accent)",
-              borderRadius: "var(--r-pill)",
-              marginTop: "var(--space-2)",
-              justifyContent: "flex-start",
-            }}
-          >
-            Fazer upgrade
-          </button>
-        </div>
-
         <details>
           <summary
             style={{

@@ -1,4 +1,21 @@
-export function PageHeader({ title }: { title: string }) {
+import { createClient } from "@/lib/supabase/server";
+
+async function greeting() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return "Olá 👋";
+
+  const { data: profile } = await supabase.from("profiles").select("name").eq("id", user.id).single();
+  const name = ((profile?.name as string) || user.email?.split("@")[0] || "").trim();
+  const firstName = name.split(/\s+/)[0] || name;
+  return `Olá ${firstName}, bem-vindo de volta 👋`;
+}
+
+export async function PageHeader({ title }: { title: string }) {
+  const hello = await greeting();
+
   return (
     <header
       style={{
@@ -11,7 +28,7 @@ export function PageHeader({ title }: { title: string }) {
     >
       <div style={{ marginRight: "auto" }}>
         <h2 style={{ margin: "0 0 2px" }}>{title}</h2>
-        <div style={{ fontSize: 13, opacity: 0.55 }}>Olá Ana, bem-vinda de volta 👋</div>
+        <div style={{ fontSize: 13, opacity: 0.55 }}>{hello}</div>
       </div>
 
       <div style={{ position: "relative", width: 300 }}>

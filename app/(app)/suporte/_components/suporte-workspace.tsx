@@ -95,12 +95,15 @@ export function SuporteWorkspace({
                 <th>Aberto</th>
                 <th>Tempo</th>
                 <th>Status</th>
-                <th></th>
               </tr>
             </thead>
             <tbody>
               {tickets.map((t) => (
-                <tr key={t.id}>
+                <tr
+                  key={t.id}
+                  onClick={() => modalRef.current?.openEdit(t)}
+                  style={{ cursor: "pointer" }}
+                >
                   <td>{t.whatsapp || t.email || "—"}</td>
                   <td>
                     <span style={{ display: "inline-flex", alignItems: "center", gap: 8, whiteSpace: "nowrap" }}>
@@ -116,36 +119,16 @@ export function SuporteWorkspace({
                       {CATEGORY_LABELS[t.category]}
                     </span>
                   </td>
-                  <td style={{ maxWidth: 280, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <td style={{ maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {t.description}
                   </td>
-                  <td>
+                  <td onClick={(e) => e.stopPropagation()}>
                     <AssigneeSelect ticketId={t.id} value={t.assignee_id} profiles={profiles} />
                   </td>
                   <td style={{ whiteSpace: "nowrap" }}>{formatDate(t.created_at)}</td>
                   <td style={{ opacity: 0.65, whiteSpace: "nowrap" }}>{elapsed(t.created_at)}</td>
-                  <td>
+                  <td onClick={(e) => e.stopPropagation()}>
                     <StatusSelect ticketId={t.id} value={t.status} />
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      onClick={() => modalRef.current?.openEdit(t)}
-                      aria-label="Editar"
-                      style={{
-                        border: "none",
-                        background: "transparent",
-                        cursor: "pointer",
-                        color: "var(--color-neutral-600)",
-                        padding: 4,
-                        display: "inline-flex",
-                      }}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 20h9" />
-                        <path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                      </svg>
-                    </button>
                   </td>
                 </tr>
               ))}

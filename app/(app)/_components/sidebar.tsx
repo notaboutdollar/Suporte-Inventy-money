@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { CSSProperties, ReactNode } from "react";
 import { logout } from "@/lib/actions/auth";
+import { InventMoneyLogo } from "@/app/_components/logo";
 
 const NAV = [
   { href: "/", label: "Dashboard", icon: <IconDashboard /> },
@@ -29,29 +30,8 @@ export function Sidebar() {
         borderRadius: "0 var(--r-card) var(--r-card) 0",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 var(--space-2)" }}>
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            background: "var(--color-accent)",
-            borderRadius: "var(--r-sm)",
-            flex: "none",
-          }}
-        />
-        <div style={{ lineHeight: 1.02 }}>
-          <div style={{ fontFamily: "var(--font-heading)", fontWeight: 800, fontSize: 17 }}>invent</div>
-          <div
-            style={{
-              fontFamily: "var(--font-heading)",
-              fontWeight: 800,
-              fontSize: 17,
-              color: "var(--color-accent)",
-            }}
-          >
-            money
-          </div>
-        </div>
+      <div style={{ display: "flex", alignItems: "center", padding: "0 var(--space-2)" }}>
+        <InventMoneyLogo size={52} />
       </div>
 
       <nav style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>

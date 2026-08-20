@@ -1,4 +1,5 @@
 import { login } from "@/lib/actions/auth";
+import { InventMoneyLogo } from "@/app/_components/logo";
 
 export default async function LoginPage({
   searchParams,
@@ -30,22 +31,8 @@ export default async function LoginPage({
           gap: "var(--space-6)",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div
-            style={{
-              width: 36,
-              height: 36,
-              background: "var(--color-accent)",
-              borderRadius: "var(--r-sm)",
-              flex: "none",
-            }}
-          />
-          <div style={{ lineHeight: 1.02 }}>
-            <div style={{ fontFamily: "var(--font-heading)", fontWeight: 800, fontSize: 17 }}>invent</div>
-            <div style={{ fontFamily: "var(--font-heading)", fontWeight: 800, fontSize: 17, color: "var(--color-accent)" }}>
-              money
-            </div>
-          </div>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <InventMoneyLogo size={64} />
         </div>
 
         <div>

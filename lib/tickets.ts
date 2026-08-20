@@ -76,6 +76,36 @@ export type Ticket = {
   category: TicketCategory;
   description: string;
   status: TicketStatus;
+  assignee_id: string | null;
   assignee: { name: string } | null;
+  extra_data: { notes?: string } | null;
   created_at: string;
+};
+
+export const STATUS_TAG_STYLE: Record<TicketStatus, { border: string; color: string; bg: string }> = {
+  solicitado: {
+    border: "var(--color-neutral-400)",
+    color: "var(--color-neutral-700)",
+    bg: "var(--color-neutral-100)",
+  },
+  em_andamento: {
+    border: "#e88b1a",
+    color: "#a86200",
+    bg: "#fff4e5",
+  },
+  aguardando_cliente: {
+    border: "var(--color-neutral-500)",
+    color: "var(--color-neutral-800)",
+    bg: "var(--color-neutral-100)",
+  },
+  resolvido: {
+    border: "#22a06b",
+    color: "#166a45",
+    bg: "#e6f6ee",
+  },
+  fechado: {
+    border: "var(--color-neutral-300)",
+    color: "var(--color-neutral-600)",
+    bg: "var(--color-neutral-100)",
+  },
 };

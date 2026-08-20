@@ -1,6 +1,5 @@
 import { PageHeader } from "../_components/page-header";
-import { NewTicketModal } from "./_components/new-ticket-modal";
-import { TicketsTable } from "./_components/tickets-table";
+import { SuporteWorkspace } from "./_components/suporte-workspace";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile, Ticket, TicketStatus } from "@/lib/tickets";
 
@@ -16,7 +15,9 @@ export default async function SuportePage({
 
   let ticketsQuery = supabase
     .from("tickets")
-    .select("id, whatsapp, email, category, description, status, created_at, assignee:profiles(name)")
+    .select(
+      "id, whatsapp, email, category, description, status, assignee_id, extra_data, created_at, assignee:profiles(name)"
+    )
     .order("created_at", { ascending: false });
 
   if (status) {
@@ -31,10 +32,6 @@ export default async function SuportePage({
     <>
       <PageHeader title="Suporte" />
 
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "var(--space-6)" }}>
-        <NewTicketModal profiles={profiles} />
-      </div>
-
       {error ? (
         <div
           className="soft"
@@ -48,7 +45,7 @@ export default async function SuportePage({
           Erro ao carregar tickets: {error.message}
         </div>
       ) : (
-        <TicketsTable tickets={tickets} activeStatus={status as TicketStatus | undefined} />
+        <SuporteWorkspace tickets={tickets} profiles={profiles} activeStatus={status as TicketStatus | undefined} />
       )}
     </>
   );

@@ -115,10 +115,13 @@ export async function updateTicketStatus(id: string, status: TicketStatus) {
 
 export async function deleteTicket(id: string) {
   const { supabase } = await currentActor();
-  const { error } = await supabase.from("tickets").delete().eq("id", id);
+  const { error, count } = await supabase.from("tickets").delete({ count: "exact" }).eq("id", id);
   if (error) {
     console.error("[deleteTicket] failed:", error);
     throw new Error(error.message);
+  }
+  if (count === 0) {
+    throw new Error("Sem permissão pra excluir. Apenas admins podem excluir tickets.");
   }
   revalidatePath("/suporte");
 }

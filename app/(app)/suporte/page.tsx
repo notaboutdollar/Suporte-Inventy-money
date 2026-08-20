@@ -26,7 +26,28 @@ export default async function SuportePage({
 
   const [{ data: profilesData }, { data: ticketsData, error }] = await Promise.all([profilesQuery, ticketsQuery]);
   const profiles = (profilesData ?? []) as Profile[];
-  const tickets = (ticketsData ?? []) as unknown as Ticket[];
+
+  const tickets: Ticket[] = (ticketsData ?? []).map((row) => {
+    const r = row as Record<string, unknown>;
+    const assigneeRaw = r.assignee as { name?: string } | { name?: string }[] | null;
+    const assignee = Array.isArray(assigneeRaw) ? (assigneeRaw[0] ?? null) : assigneeRaw;
+    return {
+      id: r.id as string,
+      whatsapp: (r.whatsapp as string | null) ?? null,
+      email: (r.email as string | null) ?? null,
+      category: r.category as Ticket["category"],
+      description: (r.description as string) ?? "",
+      status: r.status as Ticket["status"],
+      assignee_id: (r.assignee_id as string | null) ?? null,
+      assignee: assignee?.name ? { name: assignee.name } : null,
+      extra_data: (r.extra_data as Ticket["extra_data"]) ?? null,
+      created_at: r.created_at as string,
+    };
+  });
+
+  if (error) {
+    console.error("[/suporte] tickets query error:", error);
+  }
 
   return (
     <>

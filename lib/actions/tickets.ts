@@ -48,14 +48,20 @@ export async function createTicket(formData: FormData) {
     .select("id")
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error("[createTicket] insert failed:", error, "payload:", insertPayload);
+    throw new Error(error.message);
+  }
 
-  await supabase.from("ticket_events").insert({
+  const { error: eventError } = await supabase.from("ticket_events").insert({
     ticket_id: ticket.id,
     actor_id: actorId,
     kind: "created",
     payload: {},
   });
+  if (eventError) {
+    console.error("[createTicket] event insert failed:", eventError);
+  }
 
   revalidatePath("/suporte");
 }

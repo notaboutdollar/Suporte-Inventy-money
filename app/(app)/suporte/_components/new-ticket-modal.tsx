@@ -1,6 +1,6 @@
 "use client";
 
-import { useImperativeHandle, useRef, useState, useTransition, forwardRef } from "react";
+import { useImperativeHandle, useRef, useState, forwardRef } from "react";
 import { createTicket, updateTicket } from "@/lib/actions/tickets";
 import {
   CATEGORY_LABELS,
@@ -28,7 +28,7 @@ export const TicketModal = forwardRef<TicketModalHandle, { profiles: Profile[] }
 ) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
-  const [pending, startTransition] = useTransition();
+  const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ticket, setTicket] = useState<Ticket | null>(null);
 
@@ -51,21 +51,22 @@ export const TicketModal = forwardRef<TicketModalHandle, { profiles: Profile[] }
     dialogRef.current?.close();
   }
 
-  function onSubmit(formData: FormData) {
+  async function onSubmit(formData: FormData) {
     setError(null);
-    startTransition(async () => {
-      try {
-        if (isEdit && ticket) {
-          await updateTicket(ticket.id, formData);
-        } else {
-          await createTicket(formData);
-        }
-        formRef.current?.reset();
-        close();
-      } catch (e) {
-        setError(e instanceof Error ? e.message : "Erro ao salvar ticket");
+    setPending(true);
+    try {
+      if (isEdit && ticket) {
+        await updateTicket(ticket.id, formData);
+      } else {
+        await createTicket(formData);
       }
-    });
+      formRef.current?.reset();
+      close();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erro ao salvar ticket");
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
@@ -73,7 +74,6 @@ export const TicketModal = forwardRef<TicketModalHandle, { profiles: Profile[] }
       <dialog
         ref={dialogRef}
         className="soft"
-        key={ticket?.id ?? "new"}
         style={{
           border: "none",
           borderRadius: "var(--r-card)",

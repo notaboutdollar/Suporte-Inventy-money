@@ -28,6 +28,9 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const isLoginPage = request.nextUrl.pathname === "/login";
+  const isDebugRoute = request.nextUrl.pathname.startsWith("/api/debug-env");
+
+  if (isDebugRoute) return supabaseResponse;
 
   if (!user && !isLoginPage) {
     const redirectUrl = request.nextUrl.clone();

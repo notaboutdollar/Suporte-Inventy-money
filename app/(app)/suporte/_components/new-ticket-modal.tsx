@@ -1,7 +1,7 @@
 "use client";
 
 import { useImperativeHandle, useRef, useState, forwardRef } from "react";
-import { createTicket, updateTicket } from "@/lib/actions/tickets";
+import { createTicket, deleteTicket, updateTicket } from "@/lib/actions/tickets";
 import {
   CATEGORY_LABELS,
   CATEGORY_ORDER,
@@ -64,6 +64,21 @@ export const TicketModal = forwardRef<TicketModalHandle, { profiles: Profile[] }
       close();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erro ao salvar ticket");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function onDelete() {
+    if (!ticket) return;
+    if (!confirm("Excluir este ticket? Essa ação não pode ser desfeita.")) return;
+    setError(null);
+    setPending(true);
+    try {
+      await deleteTicket(ticket.id);
+      close();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erro ao excluir ticket");
     } finally {
       setPending(false);
     }
@@ -242,7 +257,7 @@ export const TicketModal = forwardRef<TicketModalHandle, { profiles: Profile[] }
               </div>
             )}
 
-            <div style={{ display: "flex", gap: "var(--space-3)", marginTop: "var(--space-2)" }}>
+            <div style={{ display: "flex", gap: "var(--space-3)", marginTop: "var(--space-2)", alignItems: "center" }}>
               <button
                 className="btn btn-primary"
                 type="submit"
@@ -254,6 +269,32 @@ export const TicketModal = forwardRef<TicketModalHandle, { profiles: Profile[] }
               <button className="btn btn-secondary" type="button" onClick={close} disabled={pending}>
                 Cancelar
               </button>
+              {isEdit && (
+                <button
+                  type="button"
+                  onClick={onDelete}
+                  disabled={pending}
+                  aria-label="Excluir ticket"
+                  title="Excluir ticket"
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    cursor: pending ? "wait" : "pointer",
+                    color: "var(--color-accent-700)",
+                    padding: 8,
+                    display: "inline-flex",
+                    marginLeft: "auto",
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    <path d="M10 11v6" />
+                    <path d="M14 11v6" />
+                    <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+                  </svg>
+                </button>
+              )}
             </div>
           </form>
         </div>

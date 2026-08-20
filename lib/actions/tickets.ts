@@ -113,6 +113,16 @@ export async function updateTicketStatus(id: string, status: TicketStatus) {
   revalidatePath("/suporte");
 }
 
+export async function deleteTicket(id: string) {
+  const { supabase } = await currentActor();
+  const { error } = await supabase.from("tickets").delete().eq("id", id);
+  if (error) {
+    console.error("[deleteTicket] failed:", error);
+    throw new Error(error.message);
+  }
+  revalidatePath("/suporte");
+}
+
 export async function updateTicketAssignee(id: string, assigneeId: string | null) {
   const { supabase, actorId } = await currentActor();
 

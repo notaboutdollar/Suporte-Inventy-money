@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import type { CSSProperties, ReactNode } from "react";
 import { logout } from "@/lib/actions/auth";
 import { InventMoneyLogo } from "@/app/_components/logo";
+import { ROLE_LABELS, type ProfileRole } from "@/lib/roles";
 
 const NAV = [
   { href: "/", label: "Dashboard", icon: <IconDashboard /> },
@@ -13,7 +14,14 @@ const NAV = [
   { href: "/configuracoes", label: "Configurações", icon: <IconSettings /> },
 ];
 
-export function Sidebar() {
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+export function Sidebar({ name, role }: { name: string; role: ProfileRole }) {
   const pathname = usePathname();
 
   return (
@@ -69,11 +77,11 @@ export function Sidebar() {
                 flex: "none",
               }}
             >
-              AM
+              {initials(name)}
             </div>
             <div style={{ lineHeight: 1.2, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600 }}>Ana Martins</div>
-              <div style={{ fontSize: 11, opacity: 0.55 }}>Gerente de Contas</div>
+              <div style={{ fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name}</div>
+              <div style={{ fontSize: 11, opacity: 0.55 }}>{ROLE_LABELS[role]}</div>
             </div>
             <IconChevronDown style={{ marginLeft: "auto", opacity: 0.5 }} />
           </summary>

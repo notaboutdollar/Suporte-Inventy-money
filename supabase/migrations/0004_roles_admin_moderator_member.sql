@@ -3,6 +3,10 @@
 -- Trigger handle_new_user passa a criar novos usuarios como 'member' (mais restritivo).
 -- Aplicar via Supabase SQL Editor.
 
+-- Postgres nao permite alterar tipo de coluna referenciada em policy.
+-- Droppa a policy que usa profiles.role, recria no fim.
+drop policy if exists "tickets delete for admin" on public.tickets;
+
 alter table public.profiles alter column role drop default;
 alter table public.profiles alter column role type text using role::text;
 drop type profile_role;
@@ -35,3 +39,8 @@ begin
   return new;
 end;
 $$;
+
+-- Recria a policy que dropamos antes, agora com o enum novo
+create policy "tickets delete for admin"
+  on public.tickets for delete to authenticated
+  using (exists (select 1 from public.profiles p where p.id = auth.uid() and p.role = 'admin'));

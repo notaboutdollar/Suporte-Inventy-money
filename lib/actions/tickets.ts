@@ -74,7 +74,7 @@ export async function updateTicket(id: string, formData: FormData) {
   const notes = (formData.get("notes") as string) || "";
   const status = formData.get("status") as TicketStatus;
 
-  const { supabase } = await currentActor();
+  const { supabase, actorId } = await currentActor();
 
   const updatePayload: Record<string, unknown> = {
     whatsapp,
@@ -90,6 +90,12 @@ export async function updateTicket(id: string, formData: FormData) {
   const { error } = await supabase.from("tickets").update(updatePayload).eq("id", id);
   if (error) throw new Error(error.message);
 
+  await supabase.from("ticket_events").insert({
+    ticket_id: id,
+    actor_id: actorId,
+    kind: "edited",
+    payload: {},
+  });
 }
 
 export async function updateTicketStatus(id: string, status: TicketStatus) {

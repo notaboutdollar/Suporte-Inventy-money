@@ -45,13 +45,14 @@ export default async function ConfiguracoesPage() {
   if (myRole === "admin") {
     const { data: profilesData } = await supabase
       .from("profiles")
-      .select("id, name, role")
+      .select("id, name, role, approved")
       .order("name");
 
     const users: UserRow[] = (profilesData ?? []).map((p) => ({
       id: p.id as string,
       name: (p.name as string) ?? "",
       role: p.role as ProfileRole,
+      approved: (p.approved as boolean) ?? false,
       isMe: (p.id as string) === user.id,
     }));
 

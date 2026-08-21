@@ -1,67 +1,213 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { updateUserRole } from "@/lib/actions/settings";
+import { approveUser, updateUserRole } from "@/lib/actions/settings";
 import { ROLE_DESCRIPTION, ROLE_LABELS, ROLE_ORDER, type ProfileRole } from "@/lib/roles";
 
 export type UserRow = {
   id: string;
   name: string;
   role: ProfileRole;
+  approved: boolean;
   isMe: boolean;
 };
 
 export function UsersTable({ users }: { users: UserRow[] }) {
+  const pending = users.filter((u) => !u.approved);
+  const approved = users.filter((u) => u.approved);
+  const approveModalRef = useRef<HTMLDialogElement>(null);
+  const [pendingUser, setPendingUser] = useState<UserRow | null>(null);
+
+  function openApprove(u: UserRow) {
+    setPendingUser(u);
+    approveModalRef.current?.showModal();
+  }
+
   return (
-    <div className="soft" style={{ background: "#ffffff", borderRadius: "var(--r-card)", padding: "var(--space-6)" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "var(--space-4)" }}>
-        <div>
-          <h4 style={{ margin: "0 0 4px" }}>Usuários</h4>
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
+      {pending.length > 0 && (
+        <div className="soft" style={{ background: "#ffffff", borderRadius: "var(--r-card)", padding: "var(--space-6)" }}>
+          <div style={{ marginBottom: "var(--space-4)" }}>
+            <h4 style={{ margin: "0 0 4px" }}>Aguardando aprovação</h4>
+            <div style={{ fontSize: 12, opacity: 0.55 }}>
+              {pending.length} {pending.length === 1 ? "cadastro pendente" : "cadastros pendentes"}
+            </div>
+          </div>
+
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {pending.map((u) => (
+                <tr key={u.id}>
+                  <td>{u.name}</td>
+                  <td style={{ textAlign: "right" }}>
+                    <button className="btn btn-primary" type="button" onClick={() => openApprove(u)} style={{ fontSize: 12, padding: "6px 14px" }}>
+                      Aprovar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <div className="soft" style={{ background: "#ffffff", borderRadius: "var(--r-card)", padding: "var(--space-6)" }}>
+        <div style={{ marginBottom: "var(--space-4)" }}>
+          <h4 style={{ margin: "0 0 4px" }}>Usuários ativos</h4>
           <div style={{ fontSize: 12, opacity: 0.55 }}>
-            {users.length} {users.length === 1 ? "usuário" : "usuários"} · admin controla os níveis
+            {approved.length} {approved.length === 1 ? "usuário" : "usuários"}
           </div>
         </div>
-      </div>
 
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Nível</th>
-            <th>Permissões</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((u) => (
-            <tr key={u.id}>
-              <td>
-                {u.name}
-                {u.isMe && <span style={{ marginLeft: 8, fontSize: 11, opacity: 0.55 }}>(você)</span>}
-              </td>
-              <td>
-                <RoleSelect userId={u.id} value={u.role} isMe={u.isMe} />
-              </td>
-              <td style={{ fontSize: 12, opacity: 0.65 }}>{ROLE_DESCRIPTION[u.role]}</td>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Nível</th>
+              <th>Permissões</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div
-        style={{
-          marginTop: "var(--space-4)",
-          padding: "var(--space-3) var(--space-4)",
-          background: "var(--color-neutral-100)",
-          borderRadius: "var(--r-sm)",
-          fontSize: 12,
-          opacity: 0.75,
-        }}
-      >
-        Pra convidar novos usuários, adicione em <strong>Supabase Dashboard → Authentication → Users → Add user</strong>. Novos
-        usuários entram como <strong>Membro</strong> por padrão.
+          </thead>
+          <tbody>
+            {approved.map((u) => (
+              <tr key={u.id}>
+                <td>
+                  {u.name}
+                  {u.isMe && <span style={{ marginLeft: 8, fontSize: 11, opacity: 0.55 }}>(você)</span>}
+                </td>
+                <td>
+                  <RoleSelect userId={u.id} value={u.role} isMe={u.isMe} />
+                </td>
+                <td style={{ fontSize: 12, opacity: 0.65 }}>{ROLE_DESCRIPTION[u.role]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+
+      <ApproveDialog ref={approveModalRef} user={pendingUser} onDone={() => setPendingUser(null)} />
     </div>
+  );
+}
+
+function ApproveDialog({
+  ref,
+  user,
+  onDone,
+}: {
+  ref: React.RefObject<HTMLDialogElement | null>;
+  user: UserRow | null;
+  onDone: () => void;
+}) {
+  const [role, setRole] = useState<ProfileRole>("member");
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  async function submit() {
+    if (!user) return;
+    setError(null);
+    setPending(true);
+    try {
+      await approveUser(user.id, role);
+      ref.current?.close();
+      onDone();
+      router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erro ao aprovar");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <dialog
+      ref={ref}
+      className="soft"
+      style={{
+        border: "none",
+        borderRadius: "var(--r-card)",
+        padding: "var(--space-6)",
+        background: "#ffffff",
+        color: "var(--color-text)",
+        maxWidth: 420,
+        width: "calc(100vw - 32px)",
+        margin: "auto",
+      }}
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+        <div>
+          <h4 style={{ margin: "0 0 4px" }}>Aprovar {user?.name}</h4>
+          <div style={{ fontSize: 13, opacity: 0.65 }}>Escolha o nível de permissão pra este usuário.</div>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+          {ROLE_ORDER.map((r) => (
+            <label
+              key={r}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "var(--space-3)",
+                padding: "var(--space-3)",
+                borderRadius: "var(--r-sm)",
+                border: `1px solid ${role === r ? "var(--color-accent)" : "var(--color-neutral-200)"}`,
+                background: role === r ? "var(--color-accent-100)" : "transparent",
+                cursor: "pointer",
+              }}
+            >
+              <input
+                type="radio"
+                name="role"
+                value={r}
+                checked={role === r}
+                onChange={() => setRole(r)}
+                style={{ margin: 0 }}
+              />
+              <div>
+                <div style={{ fontWeight: 600, fontSize: 14 }}>{ROLE_LABELS[r]}</div>
+                <div style={{ fontSize: 12, opacity: 0.65 }}>{ROLE_DESCRIPTION[r]}</div>
+              </div>
+            </label>
+          ))}
+        </div>
+
+        {error && (
+          <div
+            style={{
+              fontSize: 13,
+              color: "var(--color-accent-700)",
+              background: "var(--color-accent-100)",
+              borderRadius: "var(--r-sm)",
+              padding: "var(--space-2) var(--space-3)",
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        <div style={{ display: "flex", gap: "var(--space-3)", marginTop: "var(--space-2)" }}>
+          <button
+            className="btn btn-primary"
+            type="button"
+            onClick={submit}
+            disabled={pending}
+            style={{ flex: 1, justifyContent: "center" }}
+          >
+            {pending ? "Aprovando..." : "Aprovar"}
+          </button>
+          <button className="btn btn-secondary" type="button" onClick={() => ref.current?.close()} disabled={pending}>
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </dialog>
   );
 }
 

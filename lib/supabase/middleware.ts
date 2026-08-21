@@ -27,15 +27,32 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isLoginPage = request.nextUrl.pathname === "/login";
+  const path = request.nextUrl.pathname;
+  const isPublic = path === "/login" || path === "/signup";
+  const isPending = path === "/aguardando-aprovacao";
 
-  if (!user && !isLoginPage) {
+  if (!user) {
+    if (isPublic) return supabaseResponse;
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/login";
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (user && isLoginPage) {
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("approved")
+    .eq("id", user.id)
+    .single();
+  const approved = profile?.approved === true;
+
+  if (!approved) {
+    if (isPending) return supabaseResponse;
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = "/aguardando-aprovacao";
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  if (isPublic || isPending) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/";
     return NextResponse.redirect(redirectUrl);

@@ -20,6 +20,32 @@ export async function updateOwnProfile(formData: FormData) {
   }
 }
 
+export async function approveUser(targetUserId: string, role: ProfileRole) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Sessão inválida.");
+
+  const { data: caller } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  if (caller?.role !== "admin") {
+    throw new Error("Apenas admins podem aprovar usuários.");
+  }
+
+  const { error, count } = await supabase
+    .from("profiles")
+    .update({ approved: true, role }, { count: "exact" })
+    .eq("id", targetUserId);
+  if (error) {
+    console.error("[approveUser] failed:", error);
+    throw new Error(error.message);
+  }
+  if (count === 0) {
+    throw new Error("Nenhum usuário atualizado.");
+  }
+}
+
 export async function updateUserRole(targetUserId: string, role: ProfileRole) {
   const supabase = await createClient();
 

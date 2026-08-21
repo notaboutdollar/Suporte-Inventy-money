@@ -17,6 +17,29 @@ export async function login(formData: FormData) {
   redirect("/");
 }
 
+export async function signup(formData: FormData) {
+  const name = (formData.get("name") as string)?.trim();
+  const email = (formData.get("email") as string)?.trim();
+  const password = formData.get("password") as string;
+
+  if (!name || !email || !password) {
+    redirect(`/signup?error=${encodeURIComponent("Preencha todos os campos.")}`);
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { name } },
+  });
+
+  if (error) {
+    redirect(`/signup?error=${encodeURIComponent(error.message)}`);
+  }
+
+  redirect("/aguardando-aprovacao");
+}
+
 export async function logout() {
   const supabase = await createClient();
   await supabase.auth.signOut();

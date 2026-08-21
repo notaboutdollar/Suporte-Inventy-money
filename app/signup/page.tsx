@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { login } from "@/lib/actions/auth";
+import { signup } from "@/lib/actions/auth";
 import { InventMoneyLogo } from "@/app/_components/logo";
 
-export default async function LoginPage({
+export default async function SignupPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string }>;
@@ -23,7 +23,7 @@ export default async function LoginPage({
       <div
         className="soft"
         style={{
-          width: "min(380px, 100%)",
+          width: "min(400px, 100%)",
           background: "#ffffff",
           borderRadius: "var(--r-card)",
           padding: "var(--space-8)",
@@ -37,18 +37,32 @@ export default async function LoginPage({
         </div>
 
         <div>
-          <h3 style={{ margin: "0 0 4px" }}>Entrar</h3>
-          <div style={{ fontSize: 13, opacity: 0.55 }}>Acesso interno — NIDO Support CRM</div>
+          <h3 style={{ margin: "0 0 4px" }}>Criar conta</h3>
+          <div style={{ fontSize: 13, opacity: 0.55 }}>
+            Novo cadastro precisa ser aprovado por um admin antes de acessar o sistema.
+          </div>
         </div>
 
-        <form action={login} style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+        <form action={signup} style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+          <div className="field">
+            <label htmlFor="name">Nome completo</label>
+            <input className="input" id="name" name="name" type="text" required autoComplete="name" />
+          </div>
           <div className="field">
             <label htmlFor="email">E-mail</label>
             <input className="input" id="email" name="email" type="email" required autoComplete="email" />
           </div>
           <div className="field">
             <label htmlFor="password">Senha</label>
-            <input className="input" id="password" name="password" type="password" required autoComplete="current-password" />
+            <input
+              className="input"
+              id="password"
+              name="password"
+              type="password"
+              required
+              minLength={6}
+              autoComplete="new-password"
+            />
           </div>
 
           {error && (
@@ -66,12 +80,12 @@ export default async function LoginPage({
           )}
 
           <button className="btn btn-primary" type="submit" style={{ justifyContent: "center", marginTop: "var(--space-2)" }}>
-            Entrar
+            Solicitar acesso
           </button>
         </form>
 
         <div style={{ fontSize: 13, opacity: 0.65, textAlign: "center" }}>
-          Não tem conta? <Link href="/signup">Cadastre-se</Link>
+          Já tem conta? <Link href="/login">Entrar</Link>
         </div>
       </div>
     </div>

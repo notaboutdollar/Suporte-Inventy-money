@@ -7,6 +7,7 @@ import {
   CATEGORY_LABELS,
   STATUS_LABELS,
   STATUS_ORDER,
+  STATUS_TAG_STYLE,
   type Profile,
   type Ticket,
   type TicketStatus,
@@ -33,24 +34,28 @@ export function SuporteWorkspace({
   tickets,
   profiles,
   activeStatus,
+  canEdit,
 }: {
   tickets: Ticket[];
   profiles: Profile[];
   activeStatus?: TicketStatus;
+  canEdit: boolean;
 }) {
   const modalRef = useRef<TicketModalHandle>(null);
 
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "var(--space-6)" }}>
-        <button
-          className="btn btn-primary"
-          type="button"
-          onClick={() => modalRef.current?.openCreate()}
-        >
-          <span style={{ fontSize: 16, lineHeight: 1 }}>+</span> Novo ticket
-        </button>
-      </div>
+      {canEdit && (
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "var(--space-6)" }}>
+          <button
+            className="btn btn-primary"
+            type="button"
+            onClick={() => modalRef.current?.openCreate()}
+          >
+            <span style={{ fontSize: 16, lineHeight: 1 }}>+</span> Novo ticket
+          </button>
+        </div>
+      )}
 
       <div
         className="soft"
@@ -98,46 +103,67 @@ export function SuporteWorkspace({
               </tr>
             </thead>
             <tbody>
-              {tickets.map((t) => (
-                <tr
-                  key={t.id}
-                  onClick={() => modalRef.current?.openEdit(t)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <td>{t.whatsapp || t.email || "—"}</td>
-                  <td>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 8, whiteSpace: "nowrap" }}>
-                      <span
-                        style={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: "var(--r-pill)",
-                          background: CATEGORY_COLORS[t.category],
-                          flex: "none",
-                        }}
-                      />
-                      {CATEGORY_LABELS[t.category]}
-                    </span>
-                  </td>
-                  <td style={{ maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {t.description}
-                  </td>
-                  <td onClick={(e) => e.stopPropagation()}>
-                    <AssigneeSelect ticketId={t.id} value={t.assignee_id} profiles={profiles} />
-                  </td>
-                  <td style={{ whiteSpace: "nowrap" }}>{formatDate(t.created_at)}</td>
-                  <td style={{ opacity: 0.65, whiteSpace: "nowrap" }}>{elapsed(t.created_at)}</td>
-                  <td onClick={(e) => e.stopPropagation()}>
-                    <StatusSelect ticketId={t.id} value={t.status} />
-                  </td>
-                </tr>
-              ))}
+              {tickets.map((t) => {
+                const tag = STATUS_TAG_STYLE[t.status];
+                return (
+                  <tr
+                    key={t.id}
+                    onClick={canEdit ? () => modalRef.current?.openEdit(t) : undefined}
+                    style={{ cursor: canEdit ? "pointer" : "default" }}
+                  >
+                    <td>{t.whatsapp || t.email || "—"}</td>
+                    <td>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 8, whiteSpace: "nowrap" }}>
+                        <span
+                          style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: "var(--r-pill)",
+                            background: CATEGORY_COLORS[t.category],
+                            flex: "none",
+                          }}
+                        />
+                        {CATEGORY_LABELS[t.category]}
+                      </span>
+                    </td>
+                    <td style={{ maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {t.description}
+                    </td>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      {canEdit ? (
+                        <AssigneeSelect ticketId={t.id} value={t.assignee_id} profiles={profiles} />
+                      ) : (
+                        <span style={{ fontSize: 13 }}>{t.assignee?.name ?? "—"}</span>
+                      )}
+                    </td>
+                    <td style={{ whiteSpace: "nowrap" }}>{formatDate(t.created_at)}</td>
+                    <td style={{ opacity: 0.65, whiteSpace: "nowrap" }}>{elapsed(t.created_at)}</td>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      {canEdit ? (
+                        <StatusSelect ticketId={t.id} value={t.status} />
+                      ) : (
+                        <span
+                          className="tag"
+                          style={{
+                            borderRadius: "var(--r-sm)",
+                            border: `1px solid ${tag.border}`,
+                            color: tag.color,
+                            padding: "4px 14px",
+                          }}
+                        >
+                          {STATUS_LABELS[t.status]}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
       </div>
 
-      <TicketModal ref={modalRef} profiles={profiles} />
+      {canEdit && <TicketModal ref={modalRef} profiles={profiles} />}
     </>
   );
 }

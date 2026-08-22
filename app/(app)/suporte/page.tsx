@@ -1,6 +1,7 @@
 import { PageHeader } from "../_components/page-header";
 import { SuporteWorkspace } from "./_components/suporte-workspace";
 import { createClient } from "@/lib/supabase/server";
+import type { ProfileRole } from "@/lib/roles";
 import type { Profile, Ticket, TicketStatus } from "@/lib/tickets";
 
 export default async function SuportePage({
@@ -10,6 +11,17 @@ export default async function SuportePage({
 }) {
   const { status } = await searchParams;
   const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let canEdit = false;
+  if (user) {
+    const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    const role = (me?.role as ProfileRole | undefined) ?? "member";
+    canEdit = role === "admin" || role === "moderator";
+  }
 
   const profilesQuery = supabase.from("profiles").select("id, name").order("name");
 
@@ -66,7 +78,12 @@ export default async function SuportePage({
           Erro ao carregar tickets: {error.message}
         </div>
       ) : (
-        <SuporteWorkspace tickets={tickets} profiles={profiles} activeStatus={status as TicketStatus | undefined} />
+        <SuporteWorkspace
+          tickets={tickets}
+          profiles={profiles}
+          activeStatus={status as TicketStatus | undefined}
+          canEdit={canEdit}
+        />
       )}
     </>
   );

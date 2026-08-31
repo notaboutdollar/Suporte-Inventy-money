@@ -8,6 +8,7 @@ import { ROLE_DESCRIPTION, ROLE_LABELS, ROLE_ORDER, type ProfileRole } from "@/l
 export type UserRow = {
   id: string;
   name: string;
+  email: string;
   role: ProfileRole;
   approved: boolean;
   isMe: boolean;
@@ -39,6 +40,7 @@ export function UsersTable({ users }: { users: UserRow[] }) {
             <thead>
               <tr>
                 <th>Nome</th>
+                <th>E-mail</th>
                 <th></th>
               </tr>
             </thead>
@@ -46,6 +48,7 @@ export function UsersTable({ users }: { users: UserRow[] }) {
               {pending.map((u) => (
                 <tr key={u.id}>
                   <td>{u.name}</td>
+                  <td style={{ fontSize: 13, opacity: 0.75 }}>{u.email}</td>
                   <td style={{ textAlign: "right" }}>
                     <button className="btn btn-primary" type="button" onClick={() => openApprove(u)} style={{ fontSize: 12, padding: "6px 14px" }}>
                       Aprovar
@@ -70,6 +73,7 @@ export function UsersTable({ users }: { users: UserRow[] }) {
           <thead>
             <tr>
               <th>Nome</th>
+              <th>E-mail</th>
               <th>Nível</th>
               <th>Permissões</th>
             </tr>
@@ -81,6 +85,7 @@ export function UsersTable({ users }: { users: UserRow[] }) {
                   {u.name}
                   {u.isMe && <span style={{ marginLeft: 8, fontSize: 11, opacity: 0.55 }}>(você)</span>}
                 </td>
+                <td style={{ fontSize: 13, opacity: 0.75 }}>{u.email}</td>
                 <td>
                   <RoleSelect userId={u.id} value={u.role} isMe={u.isMe} />
                 </td>

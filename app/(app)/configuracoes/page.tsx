@@ -43,17 +43,21 @@ export default async function ConfiguracoesPage() {
   ];
 
   if (myRole === "admin") {
-    const { data: profilesData } = await supabase
-      .from("profiles")
-      .select("id, name, role, approved")
-      .order("name");
+    const { data: profilesData } = await supabase.rpc("admin_list_profiles");
 
-    const users: UserRow[] = (profilesData ?? []).map((p) => ({
-      id: p.id as string,
-      name: (p.name as string) ?? "",
+    const users: UserRow[] = (profilesData ?? []).map((p: {
+      id: string;
+      name: string | null;
+      role: string;
+      approved: boolean;
+      email: string;
+    }) => ({
+      id: p.id,
+      name: p.name ?? "",
+      email: p.email,
       role: p.role as ProfileRole,
-      approved: (p.approved as boolean) ?? false,
-      isMe: (p.id as string) === user.id,
+      approved: p.approved,
+      isMe: p.id === user.id,
     }));
 
     tabs.push({

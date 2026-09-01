@@ -11,6 +11,8 @@ const NAV = [
   { href: "/", label: "Dashboard", icon: <IconDashboard /> },
   { href: "/historico", label: "Histórico", icon: <IconClock /> },
   { href: "/suporte", label: "Suporte", icon: <IconLifeBuoy /> },
+  { href: "/afiliados", label: "Afiliados", icon: <IconUsers /> },
+  { href: "/kanban", label: "Kanban", icon: <IconKanban /> },
   { href: "/configuracoes", label: "Configurações", icon: <IconSettings /> },
 ];
 
@@ -158,6 +160,25 @@ function IconLifeBuoy() {
       <line x1="15.7" y1="15.7" x2="19" y2="19" />
       <line x1="19" y1="5" x2="15.7" y2="8.3" />
       <line x1="8.3" y1="15.7" x2="5" y2="19" />
+    </svg>
+  );
+}
+function IconUsers() {
+  return (
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+function IconKanban() {
+  return (
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="5" height="18" rx="1" />
+      <rect x="10" y="3" width="5" height="12" rx="1" />
+      <rect x="17" y="3" width="4" height="8" rx="1" />
     </svg>
   );
 }

@@ -9,7 +9,6 @@ import {
   NICHE_ORDER,
   ORIGIN_LABELS,
   ORIGIN_ORDER,
-  SOCIAL_LABELS,
   STATUS_LABELS,
   STATUS_ORDER,
   STATUS_TAG_STYLE,
@@ -18,6 +17,7 @@ import {
   type AffiliateOrigin,
   type AffiliateStatus,
 } from "@/lib/affiliates";
+import { SocialLinkIcons } from "../../_components/social-links";
 import type { Profile } from "@/lib/tickets";
 import { AfiliadoModal, type AfiliadoModalHandle } from "./afiliado-modal";
 import { StatusSelect } from "./status-select";
@@ -56,7 +56,7 @@ export function AfiliadosWorkspace({
       if (filters.niche && a.niche !== filters.niche) return false;
       if (filters.origin && a.origin !== filters.origin) return false;
       if (q) {
-        const hay = `${a.name} ${a.handle ?? ""} ${a.email ?? ""} ${a.phone ?? ""}`.toLowerCase();
+        const hay = `${a.name} ${a.email ?? ""} ${a.phone ?? ""}`.toLowerCase();
         if (!hay.includes(q)) return false;
       }
       return true;
@@ -78,7 +78,7 @@ export function AfiliadosWorkspace({
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           <input
             className="input soft"
-            placeholder="Buscar nome, handle, email..."
+            placeholder="Buscar nome, email..."
             value={filters.q}
             onChange={(e) => setFilters({ ...filters, q: e.target.value })}
             style={{ minWidth: 240, background: "#ffffff", border: "none" }}
@@ -171,7 +171,6 @@ export function AfiliadosWorkspace({
             <thead>
               <tr>
                 <th>Nome</th>
-                <th>Handle</th>
                 <th>Redes</th>
                 <th>Origem</th>
                 <th>Contato</th>
@@ -195,11 +194,8 @@ export function AfiliadosWorkspace({
                     <td>
                       <strong>{a.name}</strong>
                     </td>
-                    <td style={{ fontSize: 13, opacity: 0.8 }}>{a.handle || "—"}</td>
-                    <td style={{ fontSize: 11, opacity: 0.75 }}>
-                      {a.socials.length === 0
-                        ? "—"
-                        : a.socials.map((s) => SOCIAL_LABELS[s]).join(", ")}
+                    <td onClick={(e) => e.stopPropagation()}>
+                      <SocialLinkIcons links={a.socials} size={16} />
                     </td>
                     <td style={{ fontSize: 12 }}>{a.origin ? ORIGIN_LABELS[a.origin] : "—"}</td>
                     <td style={{ fontSize: 12, opacity: 0.8 }}>{a.phone || a.email || "—"}</td>

@@ -10,12 +10,12 @@ import {
   NICHE_ORDER,
   ORIGIN_LABELS,
   ORIGIN_ORDER,
-  SOCIAL_LABELS,
-  SOCIAL_ORDER,
+  SOCIAL_PLATFORM_LABELS,
+  SOCIAL_PLATFORM_ORDER,
+  SOCIAL_PLATFORM_PLACEHOLDERS,
   STATUS_LABELS,
   STATUS_ORDER,
   type Affiliate,
-  type Social,
 } from "@/lib/affiliates";
 import type { Profile } from "@/lib/tickets";
 
@@ -87,7 +87,6 @@ export const AfiliadoModal = forwardRef<AfiliadoModalHandle, { profiles: Profile
     }
 
     const isEdit = affiliate !== null;
-    const socialSet = new Set<Social>(affiliate?.socials ?? []);
 
     return (
       <dialog
@@ -129,21 +128,11 @@ export const AfiliadoModal = forwardRef<AfiliadoModalHandle, { profiles: Profile
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-3)" }}>
-            <div className="field">
+            <div className="field" style={{ gridColumn: "1 / -1" }}>
               <label htmlFor="name">
                 Nome <span style={{ color: "var(--color-accent)" }}>*</span>
               </label>
               <input className="input" id="name" name="name" required defaultValue={affiliate?.name ?? ""} />
-            </div>
-            <div className="field">
-              <label htmlFor="handle">Handle</label>
-              <input
-                className="input"
-                id="handle"
-                name="handle"
-                placeholder="@username"
-                defaultValue={affiliate?.handle ?? ""}
-              />
             </div>
 
             <div className="field">
@@ -289,32 +278,85 @@ export const AfiliadoModal = forwardRef<AfiliadoModalHandle, { profiles: Profile
           </div>
 
           <div className="field">
-            <label>Redes sociais do criador</label>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {SOCIAL_ORDER.map((s) => (
-                <label
-                  key={s}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 6,
-                    padding: "6px 10px",
-                    border: "1px solid var(--color-neutral-200)",
-                    borderRadius: "var(--r-sm)",
-                    fontSize: 12,
-                    cursor: "pointer",
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    name="socials"
-                    value={s}
-                    defaultChecked={socialSet.has(s)}
-                    style={{ margin: 0 }}
-                  />
-                  {SOCIAL_LABELS[s]}
-                </label>
-              ))}
+            <label style={{ marginBottom: 4 }}>Perfis nas redes</label>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              {SOCIAL_PLATFORM_ORDER.map((p) => {
+                const hasValue = !!(affiliate?.socials?.[p]);
+                return (
+                  <div
+                    key={p}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      border: `1.5px solid ${hasValue ? "var(--color-accent)" : "var(--color-neutral-200)"}`,
+                      borderRadius: "var(--r-card)",
+                      padding: "10px 12px",
+                      background: hasValue ? "var(--color-accent-100)" : "transparent",
+                      transition: "border-color 150ms, background 150ms",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 10,
+                        background: "var(--color-neutral-100)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flex: "none",
+                        color: "var(--color-text)",
+                      }}
+                    >
+                      {p === "instagram" && (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                          <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" strokeWidth="2" />
+                          <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="2" />
+                          <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" />
+                        </svg>
+                      )}
+                      {p === "youtube" && (
+                        <svg width="18" height="18" viewBox="0 0 24 24">
+                          <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" fill="currentColor" />
+                          <polygon points="9.75 15.02 15.5 11.75 9.75 8.48" fill="white" />
+                        </svg>
+                      )}
+                      {p === "tiktok" && (
+                        <svg width="18" height="18" viewBox="0 0 24 24">
+                          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1 0-5.78c.27 0 .53.04.78.1v-3.5a6.37 6.37 0 0 0-.78-.05A6.34 6.34 0 0 0 3.14 15.3 6.34 6.34 0 0 0 9.49 21.5a6.34 6.34 0 0 0 6.35-6.36V8.66A8.24 8.24 0 0 0 20.7 10.5V7.04a4.79 4.79 0 0 1-1.11-.35z" fill="currentColor" />
+                        </svg>
+                      )}
+                      {p === "twitter" && (
+                        <svg width="16" height="16" viewBox="0 0 24 24">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="currentColor" />
+                        </svg>
+                      )}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 2 }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", opacity: 0.55 }}>
+                        {SOCIAL_PLATFORM_LABELS[p]}
+                      </span>
+                      <input
+                        name={`social_${p}`}
+                        type="url"
+                        placeholder={SOCIAL_PLATFORM_PLACEHOLDERS[p]}
+                        defaultValue={affiliate?.socials?.[p] ?? ""}
+                        style={{
+                          border: "none",
+                          background: "transparent",
+                          outline: "none",
+                          fontSize: 13,
+                          fontWeight: 600,
+                          padding: 0,
+                          width: "100%",
+                          color: "var(--color-text)",
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

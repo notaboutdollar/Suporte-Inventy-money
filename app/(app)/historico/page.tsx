@@ -35,7 +35,6 @@ type Event = {
   affiliate?: {
     id: string;
     name: string;
-    handle: string | null;
     niche: AffiliateNiche | null;
   } | null;
 };
@@ -151,7 +150,7 @@ export default async function HistoricoPage() {
     supabase
       .from("affiliate_events")
       .select(
-        "id, kind, payload, created_at, actor:profiles!affiliate_events_actor_id_fkey(name), affiliate:affiliates!affiliate_events_affiliate_id_fkey(id, name, handle, niche)"
+        "id, kind, payload, created_at, actor:profiles!affiliate_events_actor_id_fkey(name), affiliate:affiliates!affiliate_events_affiliate_id_fkey(id, name, niche)"
       )
       .order("created_at", { ascending: false })
       .limit(200),
@@ -312,7 +311,6 @@ export default async function HistoricoPage() {
                           )}
                           <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {e.affiliate.name}
-                            {e.affiliate.handle ? ` (${e.affiliate.handle})` : ""}
                             {e.affiliate.niche ? ` · ${NICHE_LABELS[e.affiliate.niche]}` : ""}
                           </span>
                         </div>

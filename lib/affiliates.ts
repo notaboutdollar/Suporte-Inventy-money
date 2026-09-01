@@ -33,18 +33,18 @@ export type AffiliateNiche =
 
 export type AffiliateEngagement = "alto" | "medio" | "baixo";
 
-export type Social = "twitter" | "instagram" | "tiktok" | "youtube" | "linkedin" | "outro";
+export type SocialPlatform = "instagram" | "youtube" | "tiktok" | "twitter";
+export type SocialLinks = Partial<Record<SocialPlatform, string>>;
 
 export type Affiliate = {
   id: string;
   name: string;
-  handle: string | null;
   phone: string | null;
   email: string | null;
   state: string | null;
   city: string | null;
   origin: AffiliateOrigin | null;
-  socials: Social[];
+  socials: SocialLinks;
   niche: AffiliateNiche | null;
   engagement: AffiliateEngagement | null;
   status: AffiliateStatus;
@@ -59,6 +59,11 @@ export type Affiliate = {
   created_at: string;
   updated_at: string;
 };
+
+export function normalizeSocials(raw: unknown): SocialLinks {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  return raw as SocialLinks;
+}
 
 export const STATUS_ORDER: AffiliateStatus[] = [
   "novo",
@@ -177,13 +182,18 @@ export const ENGAGEMENT_STYLE: Record<
   baixo: { color: "#6b6b6b", bg: "#eaeaea" },
 };
 
-export const SOCIAL_LABELS: Record<Social, string> = {
-  twitter: "Twitter/X",
+export const SOCIAL_PLATFORM_ORDER: SocialPlatform[] = ["instagram", "youtube", "tiktok", "twitter"];
+
+export const SOCIAL_PLATFORM_LABELS: Record<SocialPlatform, string> = {
   instagram: "Instagram",
-  tiktok: "TikTok",
   youtube: "YouTube",
-  linkedin: "LinkedIn",
-  outro: "Outro",
+  tiktok: "TikTok",
+  twitter: "X (Twitter)",
 };
 
-export const SOCIAL_ORDER: Social[] = ["twitter", "instagram", "tiktok", "youtube", "linkedin", "outro"];
+export const SOCIAL_PLATFORM_PLACEHOLDERS: Record<SocialPlatform, string> = {
+  instagram: "https://instagram.com/usuario",
+  youtube: "https://youtube.com/@canal",
+  tiktok: "https://tiktok.com/@usuario",
+  twitter: "https://x.com/usuario",
+};

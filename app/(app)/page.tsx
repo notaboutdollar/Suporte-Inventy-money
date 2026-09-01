@@ -13,10 +13,13 @@ import {
   ORIGIN_LABELS,
   STATUS_LABELS as AFF_STATUS_LABELS,
   STATUS_TAG_STYLE as AFF_STATUS_TAG_STYLE,
+  normalizeSocials,
   type AffiliateNiche,
   type AffiliateOrigin,
   type AffiliateStatus,
+  type SocialLinks,
 } from "@/lib/affiliates";
+import { SocialLinkIcons } from "./_components/social-links";
 
 type Range = "week" | "month" | "all";
 
@@ -85,7 +88,7 @@ export default async function DashboardPage({
       .lt("follow_up_at", tomorrow.toISOString().slice(0, 10)),
     supabase
       .from("affiliates")
-      .select("id, name, handle, origin, status, niche, created_at")
+      .select("id, name, socials, origin, status, niche, created_at")
       .order("created_at", { ascending: false })
       .limit(6),
   ]);
@@ -131,16 +134,19 @@ export default async function DashboardPage({
   const closedAff = closedAffRes.count ?? 0;
   const followUpsToday = followUpsRes.count ?? 0;
 
-  type RecentAff = {
+  type RecentAffRaw = {
     id: string;
     name: string;
-    handle: string | null;
+    socials: unknown;
     origin: AffiliateOrigin | null;
     status: AffiliateStatus;
     niche: AffiliateNiche | null;
     created_at: string;
   };
-  const recentAffiliates = (recentAffRes.data ?? []) as RecentAff[];
+  const recentAffiliates = ((recentAffRes.data ?? []) as RecentAffRaw[]).map((r) => ({
+    ...r,
+    socials: normalizeSocials(r.socials),
+  }));
 
   return (
     <>
@@ -217,7 +223,7 @@ function RecentAffiliatesCard({
   rows: {
     id: string;
     name: string;
-    handle: string | null;
+    socials: SocialLinks;
     origin: AffiliateOrigin | null;
     status: AffiliateStatus;
     niche: AffiliateNiche | null;
@@ -242,7 +248,7 @@ function RecentAffiliatesCard({
           <thead>
             <tr>
               <th>Nome</th>
-              <th>Handle</th>
+              <th>Redes</th>
               <th>Origem</th>
               <th>Nicho</th>
               <th>Status</th>
@@ -255,7 +261,7 @@ function RecentAffiliatesCard({
               return (
                 <tr key={r.id}>
                   <td><strong>{r.name}</strong></td>
-                  <td style={{ fontSize: 13, opacity: 0.75 }}>{r.handle || "—"}</td>
+                  <td><SocialLinkIcons links={r.socials} size={15} /></td>
                   <td style={{ fontSize: 12 }}>{r.origin ? ORIGIN_LABELS[r.origin] : "—"}</td>
                   <td style={{ fontSize: 12 }}>{r.niche ? NICHE_LABELS[r.niche] : "—"}</td>
                   <td>

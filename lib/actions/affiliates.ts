@@ -6,7 +6,8 @@ import type {
   AffiliateNiche,
   AffiliateOrigin,
   AffiliateStatus,
-  Social,
+  SocialLinks,
+  SocialPlatform,
 } from "@/lib/affiliates";
 
 async function currentActor() {
@@ -31,14 +32,18 @@ function parseDate(v: FormDataEntryValue | null): string | null {
   return s;
 }
 
-function parseSocials(formData: FormData): Social[] {
-  return formData.getAll("socials").map((v) => String(v) as Social);
+function parseSocials(formData: FormData): SocialLinks {
+  const links: SocialLinks = {};
+  for (const p of ["instagram", "youtube", "tiktok", "twitter"] as SocialPlatform[]) {
+    const url = nullable(formData.get(`social_${p}`));
+    if (url) links[p] = url;
+  }
+  return links;
 }
 
 function buildPayload(formData: FormData) {
   return {
     name: (formData.get("name") as string)?.trim() || "",
-    handle: nullable(formData.get("handle")),
     phone: nullable(formData.get("phone")),
     email: nullable(formData.get("email")),
     state: nullable(formData.get("state")),

@@ -7,11 +7,13 @@ import {
   ENGAGEMENT_LABELS,
   ENGAGEMENT_STYLE,
   NICHE_LABELS,
+  SOCIAL_PLATFORM_LABELS,
   STATUS_LABELS,
   STATUS_ORDER,
   STATUS_TAG_STYLE,
   type Affiliate,
   type AffiliateStatus,
+  type SocialPlatform,
 } from "@/lib/affiliates";
 
 function isFollowUpToday(iso: string | null) {
@@ -182,8 +184,24 @@ function KanbanCard({
       }}
     >
       <div style={{ fontWeight: 700, fontSize: 14, lineHeight: 1.2 }}>{affiliate.name}</div>
-      {affiliate.handle && (
-        <div style={{ fontSize: 12, opacity: 0.55 }}>{affiliate.handle}</div>
+      {Object.keys(affiliate.socials).length > 0 && (
+        <div style={{ display: "flex", gap: 6, fontSize: 11 }}>
+          {(["instagram", "youtube", "tiktok", "twitter"] as SocialPlatform[])
+            .filter((p) => affiliate.socials[p])
+            .map((p) => (
+              <a
+                key={p}
+                href={affiliate.socials[p]}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={SOCIAL_PLATFORM_LABELS[p]}
+                style={{ color: "var(--color-accent)", textDecoration: "none", fontWeight: 600 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {SOCIAL_PLATFORM_LABELS[p]}
+              </a>
+            ))}
+        </div>
       )}
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }}>
         {affiliate.niche && (

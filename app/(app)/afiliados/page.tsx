@@ -3,7 +3,7 @@ import { AfiliadosWorkspace } from "./_components/afiliados-workspace";
 import { createClient } from "@/lib/supabase/server";
 import type { ProfileRole } from "@/lib/roles";
 import type { Profile } from "@/lib/tickets";
-import type { Affiliate } from "@/lib/affiliates";
+import { normalizeSocials, type Affiliate } from "@/lib/affiliates";
 
 export default async function AfiliadosPage() {
   const supabase = await createClient();
@@ -24,7 +24,7 @@ export default async function AfiliadosPage() {
     supabase
       .from("affiliates")
       .select(
-        "id, name, handle, phone, email, state, city, origin, socials, niche, engagement, status, first_contact_at, last_contact_at, follow_up_at, conversion_trigger, notes, media_kit_url, assignee_id, created_at, updated_at, assignee:profiles!affiliates_assignee_id_fkey(name)"
+        "id, name, phone, email, state, city, origin, socials, niche, engagement, status, first_contact_at, last_contact_at, follow_up_at, conversion_trigger, notes, media_kit_url, assignee_id, created_at, updated_at, assignee:profiles!affiliates_assignee_id_fkey(name)"
       )
       .order("created_at", { ascending: false }),
   ]);
@@ -40,13 +40,12 @@ export default async function AfiliadosPage() {
     return {
       id: row.id as string,
       name: (row.name as string) ?? "",
-      handle: (row.handle as string) ?? null,
       phone: (row.phone as string) ?? null,
       email: (row.email as string) ?? null,
       state: (row.state as string) ?? null,
       city: (row.city as string) ?? null,
       origin: (row.origin as Affiliate["origin"]) ?? null,
-      socials: (row.socials as Affiliate["socials"]) ?? [],
+      socials: normalizeSocials(row.socials),
       niche: (row.niche as Affiliate["niche"]) ?? null,
       engagement: (row.engagement as Affiliate["engagement"]) ?? null,
       status: row.status as Affiliate["status"],

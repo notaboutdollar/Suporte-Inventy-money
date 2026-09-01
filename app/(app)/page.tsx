@@ -8,6 +8,15 @@ import {
   CATEGORY_ORDER,
   type TicketCategory,
 } from "@/lib/tickets";
+import {
+  NICHE_LABELS,
+  ORIGIN_LABELS,
+  STATUS_LABELS as AFF_STATUS_LABELS,
+  STATUS_TAG_STYLE as AFF_STATUS_TAG_STYLE,
+  type AffiliateNiche,
+  type AffiliateOrigin,
+  type AffiliateStatus,
+} from "@/lib/affiliates";
 
 type Range = "week" | "month" | "all";
 
@@ -50,8 +59,12 @@ export default async function DashboardPage({
   const rangeStartDate = rangeStart(range);
 
   const openStatuses = ["solicitado", "em_andamento", "aguardando_cliente"];
+  const activeAffStatuses = ["novo", "no_processo", "em_negociacao", "ativo"];
+  const closedAffStatuses = ["fechado"];
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const [openRes, resolvedTodayRes, categoryRes, volumeRes] = await Promise.all([
+  const [openRes, resolvedTodayRes, categoryRes, volumeRes, totalAffRes, activeAffRes, closedAffRes, followUpsRes, recentAffRes] = await Promise.all([
     supabase.from("tickets").select("id", { count: "exact", head: true }).in("status", openStatuses),
     supabase
       .from("tickets")
@@ -62,6 +75,19 @@ export default async function DashboardPage({
       ? supabase.from("tickets").select("category").gte("created_at", rangeStartDate.toISOString())
       : supabase.from("tickets").select("category")),
     supabase.from("tickets").select("created_at").gte("created_at", fourteenAgo.toISOString()),
+    supabase.from("affiliates").select("id", { count: "exact", head: true }),
+    supabase.from("affiliates").select("id", { count: "exact", head: true }).in("status", activeAffStatuses),
+    supabase.from("affiliates").select("id", { count: "exact", head: true }).in("status", closedAffStatuses),
+    supabase
+      .from("affiliates")
+      .select("id", { count: "exact", head: true })
+      .gte("follow_up_at", today.toISOString().slice(0, 10))
+      .lt("follow_up_at", tomorrow.toISOString().slice(0, 10)),
+    supabase
+      .from("affiliates")
+      .select("id, name, handle, origin, status, niche, created_at")
+      .order("created_at", { ascending: false })
+      .limit(6),
   ]);
 
   const openCount = openRes.count ?? 0;
@@ -100,18 +126,166 @@ export default async function DashboardPage({
   }
   const maxVolume = Math.max(1, ...volumeByDay.map((b) => b.count));
 
+  const totalAff = totalAffRes.count ?? 0;
+  const activeAff = activeAffRes.count ?? 0;
+  const closedAff = closedAffRes.count ?? 0;
+  const followUpsToday = followUpsRes.count ?? 0;
+
+  type RecentAff = {
+    id: string;
+    name: string;
+    handle: string | null;
+    origin: AffiliateOrigin | null;
+    status: AffiliateStatus;
+    niche: AffiliateNiche | null;
+    created_at: string;
+  };
+  const recentAffiliates = (recentAffRes.data ?? []) as RecentAff[];
+
   return (
     <>
       <PageHeader title="Dashboard" />
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
-        <KpiRow openCount={openCount} resolvedToday={resolvedToday} />
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-6)", alignItems: "stretch" }}>
-          <CategoriesCard counts={categoryCounts} max={maxCategory} range={range} />
-          <VolumeCard days={volumeByDay} max={maxVolume} />
-        </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-8)" }}>
+        <section style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
+          <SectionHeader title="Suporte" href="/suporte" hrefLabel="Ver tickets" />
+          <KpiRow openCount={openCount} resolvedToday={resolvedToday} />
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-6)", alignItems: "stretch" }}>
+            <CategoriesCard counts={categoryCounts} max={maxCategory} range={range} />
+            <VolumeCard days={volumeByDay} max={maxVolume} />
+          </div>
+        </section>
+
+        <section style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
+          <SectionHeader title="Afiliados" href="/afiliados" hrefLabel="Ver todos" />
+          <AffKpiRow total={totalAff} active={activeAff} closed={closedAff} followUps={followUpsToday} />
+          <RecentAffiliatesCard rows={recentAffiliates} />
+        </section>
       </div>
     </>
+  );
+}
+
+function SectionHeader({ title, href, hrefLabel }: { title: string; href: string; hrefLabel: string }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <h3 style={{ margin: 0 }}>{title}</h3>
+      <Link
+        href={href}
+        style={{ fontSize: 13, color: "var(--color-accent)", textDecoration: "none", fontWeight: 600 }}
+      >
+        {hrefLabel} →
+      </Link>
+    </div>
+  );
+}
+
+function AffKpiRow({
+  total,
+  active,
+  closed,
+  followUps,
+}: {
+  total: number;
+  active: number;
+  closed: number;
+  followUps: number;
+}) {
+  return (
+    <div
+      className="soft"
+      style={{
+        background: "#ffffff",
+        borderRadius: "var(--r-card)",
+        padding: "var(--space-6)",
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+        gap: "var(--space-6)",
+      }}
+    >
+      <Kpi label="Total afiliados" value={total.toString()} icon={<IconUsers />} tone="neutral" />
+      <Kpi label="Ativos" value={active.toString()} icon={<IconSparkle />} tone="accent" />
+      <Kpi label="Fechados" value={closed.toString()} icon={<IconCheck />} tone="green" />
+      <Kpi label="Follow-ups hoje" value={followUps.toString()} icon={<IconClock />} tone="accent" />
+    </div>
+  );
+}
+
+function RecentAffiliatesCard({
+  rows,
+}: {
+  rows: {
+    id: string;
+    name: string;
+    handle: string | null;
+    origin: AffiliateOrigin | null;
+    status: AffiliateStatus;
+    niche: AffiliateNiche | null;
+    created_at: string;
+  }[];
+}) {
+  return (
+    <div
+      className="soft"
+      style={{ background: "#ffffff", borderRadius: "var(--r-card)", padding: "var(--space-6)", overflowX: "auto" }}
+    >
+      <div style={{ marginBottom: "var(--space-4)" }}>
+        <h4 style={{ margin: "0 0 4px" }}>Afiliados recentes</h4>
+        <div style={{ fontSize: 12, opacity: 0.55 }}>Últimos {rows.length} cadastros</div>
+      </div>
+      {rows.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "var(--space-6)", opacity: 0.55 }}>
+          Nenhum afiliado cadastrado ainda.
+        </div>
+      ) : (
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Handle</th>
+              <th>Origem</th>
+              <th>Nicho</th>
+              <th>Status</th>
+              <th>Adicionado em</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => {
+              const tag = AFF_STATUS_TAG_STYLE[r.status];
+              return (
+                <tr key={r.id}>
+                  <td><strong>{r.name}</strong></td>
+                  <td style={{ fontSize: 13, opacity: 0.75 }}>{r.handle || "—"}</td>
+                  <td style={{ fontSize: 12 }}>{r.origin ? ORIGIN_LABELS[r.origin] : "—"}</td>
+                  <td style={{ fontSize: 12 }}>{r.niche ? NICHE_LABELS[r.niche] : "—"}</td>
+                  <td>
+                    <span
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 600,
+                        color: tag.color,
+                        border: `1px solid ${tag.border}`,
+                        borderRadius: "var(--r-sm)",
+                        padding: "3px 10px",
+                      }}
+                    >
+                      {AFF_STATUS_LABELS[r.status]}
+                    </span>
+                  </td>
+                  <td style={{ fontSize: 12, opacity: 0.75, whiteSpace: "nowrap" }}>
+                    {new Intl.DateTimeFormat("pt-BR", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    }).format(new Date(r.created_at))}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+    </div>
   );
 }
 
@@ -387,6 +561,23 @@ function IconTarget() {
       <circle cx="12" cy="12" r="9" />
       <circle cx="12" cy="12" r="5" />
       <circle cx="12" cy="12" r="1.5" />
+    </svg>
+  );
+}
+function IconUsers() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+function IconSparkle() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3z" />
     </svg>
   );
 }

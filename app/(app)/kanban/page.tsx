@@ -65,7 +65,7 @@ export default async function KanbanPage() {
       >
         <div style={{ fontSize: 13, opacity: 0.65 }}>
           {canEdit
-            ? "Arraste os cards para mudar o status de cada afiliado."
+            ? "Arraste os cards para mudar o status de cada criador."
             : "Modo somente-leitura. Membros não podem mover cards."}
         </div>
         <Link href="/afiliados" className="btn btn-secondary" style={{ fontSize: 13 }}>
@@ -83,7 +83,7 @@ export default async function KanbanPage() {
             color: "var(--color-accent-700)",
           }}
         >
-          Erro ao carregar afiliados: {error.message}
+          Erro ao carregar criadores: {error.message}
         </div>
       ) : (
         <KanbanBoard affiliates={affiliates} canEdit={canEdit} />

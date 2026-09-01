@@ -11,7 +11,7 @@ const NAV = [
   { href: "/", label: "Dashboard", icon: <IconDashboard /> },
   { href: "/historico", label: "Histórico", icon: <IconClock /> },
   { href: "/suporte", label: "Suporte", icon: <IconLifeBuoy /> },
-  { href: "/afiliados", label: "Afiliados", icon: <IconUsers /> },
+  { href: "/afiliados", label: "Criadores", icon: <IconUsers /> },
   { href: "/kanban", label: "Kanban", icon: <IconKanban /> },
   { href: "/configuracoes", label: "Configurações", icon: <IconSettings /> },
 ];

@@ -65,7 +65,7 @@ export default async function AfiliadosPage() {
 
   return (
     <>
-      <PageHeader title="Afiliados" />
+      <PageHeader title="Criadores" />
 
       {affiliatesQ.error ? (
         <div
@@ -77,7 +77,7 @@ export default async function AfiliadosPage() {
             color: "var(--color-accent-700)",
           }}
         >
-          Erro ao carregar afiliados: {affiliatesQ.error.message}
+          Erro ao carregar criadores: {affiliatesQ.error.message}
         </div>
       ) : (
         <AfiliadosWorkspace affiliates={affiliates} profiles={profiles} canEdit={canEdit} />

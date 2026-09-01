@@ -157,7 +157,7 @@ export default async function DashboardPage({
         </section>
 
         <section style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
-          <SectionHeader title="Afiliados" href="/afiliados" hrefLabel="Ver todos" />
+          <SectionHeader title="Criadores" href="/afiliados" hrefLabel="Ver todos" />
           <AffKpiRow total={totalAff} active={activeAff} closed={closedAff} followUps={followUpsToday} />
           <RecentAffiliatesCard rows={recentAffiliates} />
         </section>
@@ -203,7 +203,7 @@ function AffKpiRow({
         gap: "var(--space-6)",
       }}
     >
-      <Kpi label="Total afiliados" value={total.toString()} icon={<IconUsers />} tone="neutral" />
+      <Kpi label="Total criadores" value={total.toString()} icon={<IconUsers />} tone="neutral" />
       <Kpi label="Ativos" value={active.toString()} icon={<IconSparkle />} tone="accent" />
       <Kpi label="Fechados" value={closed.toString()} icon={<IconCheck />} tone="green" />
       <Kpi label="Follow-ups hoje" value={followUps.toString()} icon={<IconClock />} tone="accent" />
@@ -230,12 +230,12 @@ function RecentAffiliatesCard({
       style={{ background: "#ffffff", borderRadius: "var(--r-card)", padding: "var(--space-6)", overflowX: "auto" }}
     >
       <div style={{ marginBottom: "var(--space-4)" }}>
-        <h4 style={{ margin: "0 0 4px" }}>Afiliados recentes</h4>
+        <h4 style={{ margin: "0 0 4px" }}>Criadores recentes</h4>
         <div style={{ fontSize: 12, opacity: 0.55 }}>Últimos {rows.length} cadastros</div>
       </div>
       {rows.length === 0 ? (
         <div style={{ textAlign: "center", padding: "var(--space-6)", opacity: 0.55 }}>
-          Nenhum afiliado cadastrado ainda.
+          Nenhum criador cadastrado ainda.
         </div>
       ) : (
         <table className="table">

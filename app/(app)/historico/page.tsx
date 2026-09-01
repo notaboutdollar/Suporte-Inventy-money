@@ -111,27 +111,27 @@ function renderAffiliateEvent(e: Event) {
   const actor = e.actor?.name ?? "Alguém";
   switch (e.kind) {
     case "created":
-      return <><strong>{actor}</strong> cadastrou o afiliado</>;
+      return <><strong>{actor}</strong> cadastrou o criador</>;
     case "status_change": {
       const from = e.payload?.from ? AFF_STATUS_LABELS[e.payload.from as AffiliateStatus] ?? e.payload.from : null;
       const to = e.payload?.to ? AFF_STATUS_LABELS[e.payload.to as AffiliateStatus] ?? e.payload.to : null;
       return (
         <>
           <strong>{actor}</strong> mudou o status{from ? ` de ${from}` : ""}
-          {to ? ` para ${to}` : ""} do afiliado
+          {to ? ` para ${to}` : ""} do criador
         </>
       );
     }
     case "assigned":
       return (
         <>
-          <strong>{actor}</strong> {e.payload?.assignee_id ? "atribuiu um responsável" : "removeu o responsável"} do afiliado
+          <strong>{actor}</strong> {e.payload?.assignee_id ? "atribuiu um responsável" : "removeu o responsável"} do criador
         </>
       );
     case "edited":
-      return <><strong>{actor}</strong> editou o afiliado</>;
+      return <><strong>{actor}</strong> editou o criador</>;
     case "comment":
-      return <><strong>{actor}</strong> comentou no afiliado</>;
+      return <><strong>{actor}</strong> comentou no criador</>;
     default:
       return <strong>{actor}</strong>;
   }
@@ -275,7 +275,7 @@ export default async function HistoricoPage() {
                             padding: "2px 8px",
                           }}
                         >
-                          {e.origin === "ticket" ? "Suporte" : "Afiliado"}
+                          {e.origin === "ticket" ? "Suporte" : "Criador"}
                         </span>
                         <span>{e.origin === "ticket" ? renderTicketEvent(e) : renderAffiliateEvent(e)}</span>
                       </div>

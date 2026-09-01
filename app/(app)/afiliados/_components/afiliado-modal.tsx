@@ -72,7 +72,7 @@ export const AfiliadoModal = forwardRef<AfiliadoModalHandle, { profiles: Profile
 
     async function onDelete() {
       if (!affiliate) return;
-      if (!confirm("Excluir este afiliado? Essa ação não pode ser desfeita.")) return;
+      if (!confirm("Excluir este criador? Essa ação não pode ser desfeita.")) return;
       setError(null);
       setPending(true);
       try {
@@ -113,9 +113,9 @@ export const AfiliadoModal = forwardRef<AfiliadoModalHandle, { profiles: Profile
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <div>
-              <h4 style={{ margin: "0 0 4px" }}>{isEdit ? "Editar afiliado" : "Novo afiliado"}</h4>
+              <h4 style={{ margin: "0 0 4px" }}>{isEdit ? "Editar criador" : "Novo criador"}</h4>
               <div style={{ fontSize: 13, opacity: 0.6 }}>
-                {isEdit ? "Atualize os dados do afiliado." : "Preencha os dados iniciais do afiliado."}
+                {isEdit ? "Atualize os dados do criador." : "Preencha os dados iniciais do criador."}
               </div>
             </div>
             <button
@@ -372,7 +372,7 @@ export const AfiliadoModal = forwardRef<AfiliadoModalHandle, { profiles: Profile
               disabled={pending}
               style={{ flex: 1, justifyContent: "center" }}
             >
-              {pending ? "Salvando..." : isEdit ? "Salvar" : "Criar afiliado"}
+              {pending ? "Salvando..." : isEdit ? "Salvar" : "Criar criador"}
             </button>
             <button className="btn btn-secondary" type="button" onClick={close} disabled={pending}>
               Cancelar

@@ -152,6 +152,6 @@ export async function deleteAffiliate(id: string) {
     throw new Error(error.message);
   }
   if (count === 0) {
-    throw new Error("Sem permissão pra excluir. Apenas admins podem excluir afiliados.");
+    throw new Error("Sem permissão pra excluir. Apenas admins podem excluir criadores.");
   }
 }

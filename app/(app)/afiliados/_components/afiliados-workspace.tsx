@@ -138,7 +138,7 @@ export function AfiliadosWorkspace({
               type="button"
               onClick={() => modalRef.current?.openCreate()}
             >
-              <span style={{ fontSize: 16, lineHeight: 1 }}>+</span> Novo afiliado
+              <span style={{ fontSize: 16, lineHeight: 1 }}>+</span> Novo criador
             </button>
           )}
         </div>
@@ -155,7 +155,7 @@ export function AfiliadosWorkspace({
       >
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "var(--space-4)" }}>
           <div>
-            <h4 style={{ margin: "0 0 4px" }}>Afiliados</h4>
+            <h4 style={{ margin: "0 0 4px" }}>Criadores</h4>
             <div style={{ fontSize: 12, opacity: 0.55 }}>
               {filtered.length} de {affiliates.length}
             </div>
@@ -164,7 +164,7 @@ export function AfiliadosWorkspace({
 
         {filtered.length === 0 ? (
           <div style={{ textAlign: "center", padding: "var(--space-8)", opacity: 0.55 }}>
-            Nenhum afiliado encontrado.
+            Nenhum criador encontrado.
           </div>
         ) : (
           <table className="table">

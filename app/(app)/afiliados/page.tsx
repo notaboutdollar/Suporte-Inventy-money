@@ -16,7 +16,7 @@ export default async function AfiliadosPage() {
   if (user) {
     const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
     const role = (me?.role as ProfileRole | undefined) ?? "member";
-    canEdit = role === "admin" || role === "moderator";
+    canEdit = role === "admin" || role === "gerente";
   }
 
   const [profilesQ, affiliatesQ] = await Promise.all([

@@ -1,15 +1,17 @@
-export type ProfileRole = "admin" | "moderator" | "member";
+export type ProfileRole = "admin" | "gerente" | "moderator" | "member";
 
 export const ROLE_LABELS: Record<ProfileRole, string> = {
   admin: "Admin",
+  gerente: "Gerente",
   moderator: "Moderador",
   member: "Membro",
 };
 
 export const ROLE_DESCRIPTION: Record<ProfileRole, string> = {
   admin: "Pode tudo, incluindo gerenciar usuários",
-  moderator: "Cria, atualiza e atribui tickets",
-  member: "Somente visualiza tickets",
+  gerente: "Gerencia criadores e kanban",
+  moderator: "Gerencia tickets de suporte",
+  member: "Somente visualiza",
 };
 
-export const ROLE_ORDER: ProfileRole[] = ["admin", "moderator", "member"];
+export const ROLE_ORDER: ProfileRole[] = ["admin", "gerente", "moderator", "member"];

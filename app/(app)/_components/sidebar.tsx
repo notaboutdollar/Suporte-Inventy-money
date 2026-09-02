@@ -7,13 +7,13 @@ import { logout } from "@/lib/actions/auth";
 import { InventMoneyLogo } from "@/app/_components/logo";
 import { ROLE_LABELS, type ProfileRole } from "@/lib/roles";
 
-const NAV = [
-  { href: "/", label: "Dashboard", icon: <IconDashboard /> },
-  { href: "/historico", label: "Histórico", icon: <IconClock /> },
-  { href: "/suporte", label: "Suporte", icon: <IconLifeBuoy /> },
-  { href: "/afiliados", label: "Criadores", icon: <IconUsers /> },
-  { href: "/kanban", label: "Kanban", icon: <IconKanban /> },
-  { href: "/configuracoes", label: "Configurações", icon: <IconSettings /> },
+const NAV: { href: string; label: string; icon: ReactNode; roles: ProfileRole[] | null }[] = [
+  { href: "/", label: "Dashboard", icon: <IconDashboard />, roles: null },
+  { href: "/historico", label: "Histórico", icon: <IconClock />, roles: null },
+  { href: "/suporte", label: "Suporte", icon: <IconLifeBuoy />, roles: ["admin", "moderator", "member"] },
+  { href: "/afiliados", label: "Criadores", icon: <IconUsers />, roles: ["admin", "gerente", "member"] },
+  { href: "/kanban", label: "Kanban", icon: <IconKanban />, roles: ["admin", "gerente", "member"] },
+  { href: "/configuracoes", label: "Configurações", icon: <IconSettings />, roles: null },
 ];
 
 function initials(name: string) {
@@ -45,7 +45,7 @@ export function Sidebar({ name, role }: { name: string; role: ProfileRole }) {
       </div>
 
       <nav style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
-        {NAV.map((item) => {
+        {NAV.filter((item) => !item.roles || item.roles.includes(role)).map((item) => {
           const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
           return <NavItem key={item.href} href={item.href} label={item.label} icon={item.icon} active={active} />;
         })}

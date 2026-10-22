@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Export estático do handoff visual, não faz parte do app.
+    "design_handoff_crm/**",
   ]),
 ]);
 

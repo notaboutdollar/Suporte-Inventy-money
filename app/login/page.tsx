@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { login } from "@/lib/actions/auth";
 import { InventMoneyLogo } from "@/app/_components/logo";
+import { ThemeToggle } from "@/app/_components/theme-toggle";
+import { getTheme } from "@/lib/theme";
 
 export default async function LoginPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
-  const { error } = await searchParams;
+  const [{ error }, theme] = await Promise.all([searchParams, getTheme()]);
 
   return (
     <div
@@ -20,11 +22,14 @@ export default async function LoginPage({
         padding: "var(--space-6)",
       }}
     >
+      <div style={{ position: "fixed", top: 16, right: 16 }}>
+        <ThemeToggle compact initial={theme} />
+      </div>
       <div
         className="soft"
         style={{
           width: "min(380px, 100%)",
-          background: "#ffffff",
+          background: "var(--color-card)",
           borderRadius: "var(--r-card)",
           padding: "var(--space-8)",
           display: "flex",

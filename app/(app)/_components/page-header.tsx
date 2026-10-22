@@ -1,15 +1,9 @@
-import { createClient } from "@/lib/supabase/server";
+import { getSessionContext } from "@/lib/session";
 
 async function greeting() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return "Olá 👋";
-
-  const { data: profile } = await supabase.from("profiles").select("name").eq("id", user.id).single();
-  const name = ((profile?.name as string) || user.email?.split("@")[0] || "").trim();
-  const firstName = name.split(/\s+/)[0] || name;
+  const { name } = await getSessionContext();
+  const firstName = name.trim().split(/\s+/)[0];
+  if (!firstName) return "Olá 👋";
   return `Olá ${firstName}, bem-vindo de volta 👋`;
 }
 
@@ -53,7 +47,7 @@ export async function PageHeader({ title }: { title: string }) {
           style={{
             paddingLeft: 42,
             minHeight: 42,
-            background: "#ffffff",
+            background: "var(--color-card)",
             border: "none",
             borderRadius: "var(--r-md)",
           }}
@@ -63,7 +57,7 @@ export async function PageHeader({ title }: { title: string }) {
       <button
         className="btn btn-icon soft"
         aria-label="Notificações"
-        style={{ background: "#ffffff", borderRadius: "var(--r-md)", width: 42, height: 42 }}
+        style={{ background: "var(--color-card)", borderRadius: "var(--r-md)", width: 42, height: 42 }}
       >
         <svg
           width="18"

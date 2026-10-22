@@ -1,31 +1,31 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateTicketStatus } from "@/lib/actions/tickets";
 import { STATUS_LABELS, STATUS_ORDER, STATUS_TAG_STYLE, type TicketStatus } from "@/lib/tickets";
 
 export function StatusSelect({ ticketId, value }: { ticketId: string; value: TicketStatus }) {
   const [current, setCurrent] = useState<TicketStatus>(value);
-  const [pending, startTransition] = useTransition();
+  const seq = useRef(0);
   const router = useRouter();
   const style = STATUS_TAG_STYLE[current];
 
   return (
     <select
       value={current}
-      disabled={pending}
       onChange={(e) => {
         const next = e.target.value as TicketStatus;
+        const prev = current;
+        const token = ++seq.current;
         setCurrent(next);
-        startTransition(async () => {
-          try {
-            await updateTicketStatus(ticketId, next);
-            router.refresh();
-          } catch {
-            setCurrent(value);
-          }
-        });
+        void updateTicketStatus(ticketId, next)
+          .then(() => {
+            if (token === seq.current) router.refresh();
+          })
+          .catch(() => {
+            if (token === seq.current) setCurrent(prev);
+          });
       }}
       style={{
         border: `1px solid ${style.border}`,
@@ -36,7 +36,7 @@ export function StatusSelect({ ticketId, value }: { ticketId: string; value: Tic
         fontSize: 12,
         fontWeight: 600,
         letterSpacing: 0.02,
-        cursor: pending ? "wait" : "pointer",
+        cursor: "pointer",
         font: "inherit",
         appearance: "none",
         backgroundImage:

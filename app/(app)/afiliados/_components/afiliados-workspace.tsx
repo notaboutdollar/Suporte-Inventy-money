@@ -81,7 +81,7 @@ export function AfiliadosWorkspace({
             placeholder="Buscar nome, email..."
             value={filters.q}
             onChange={(e) => setFilters({ ...filters, q: e.target.value })}
-            style={{ minWidth: 240, background: "#ffffff", border: "none" }}
+            style={{ minWidth: 240, background: "var(--color-card)", border: "none" }}
           />
           <select
             className="input soft"
@@ -89,7 +89,7 @@ export function AfiliadosWorkspace({
             onChange={(e) =>
               setFilters({ ...filters, status: e.target.value as AffiliateStatus | "" })
             }
-            style={{ background: "#ffffff", border: "none" }}
+            style={{ background: "var(--color-card)", border: "none" }}
           >
             <option value="">Todos status</option>
             {STATUS_ORDER.map((s) => (
@@ -102,7 +102,7 @@ export function AfiliadosWorkspace({
             className="input soft"
             value={filters.niche}
             onChange={(e) => setFilters({ ...filters, niche: e.target.value as AffiliateNiche | "" })}
-            style={{ background: "#ffffff", border: "none" }}
+            style={{ background: "var(--color-card)", border: "none" }}
           >
             <option value="">Todos nichos</option>
             {NICHE_ORDER.map((n) => (
@@ -117,7 +117,7 @@ export function AfiliadosWorkspace({
             onChange={(e) =>
               setFilters({ ...filters, origin: e.target.value as AffiliateOrigin | "" })
             }
-            style={{ background: "#ffffff", border: "none" }}
+            style={{ background: "var(--color-card)", border: "none" }}
           >
             <option value="">Todas origens</option>
             {ORIGIN_ORDER.map((o) => (
@@ -147,7 +147,7 @@ export function AfiliadosWorkspace({
       <div
         className="soft"
         style={{
-          background: "#ffffff",
+          background: "var(--color-card)",
           borderRadius: "var(--r-card)",
           padding: "var(--space-6)",
           overflow: "auto",

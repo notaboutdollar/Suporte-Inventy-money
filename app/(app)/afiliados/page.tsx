@@ -1,23 +1,12 @@
 import { PageHeader } from "../_components/page-header";
 import { AfiliadosWorkspace } from "./_components/afiliados-workspace";
-import { createClient } from "@/lib/supabase/server";
-import type { ProfileRole } from "@/lib/roles";
+import { getSessionContext } from "@/lib/session";
 import type { Profile } from "@/lib/tickets";
 import { normalizeSocials, type Affiliate } from "@/lib/affiliates";
 
 export default async function AfiliadosPage() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  let canEdit = false;
-  if (user) {
-    const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    const role = (me?.role as ProfileRole | undefined) ?? "member";
-    canEdit = role === "admin" || role === "gerente";
-  }
+  const { supabase, role } = await getSessionContext();
+  const canEdit = role === "admin" || role === "gerente";
 
   const [profilesQ, affiliatesQ] = await Promise.all([
     supabase.from("profiles").select("id, name").order("name"),
@@ -70,7 +59,7 @@ export default async function AfiliadosPage() {
         <div
           className="soft"
           style={{
-            background: "#ffffff",
+            background: "var(--color-card)",
             borderRadius: "var(--r-card)",
             padding: "var(--space-6)",
             color: "var(--color-accent-700)",

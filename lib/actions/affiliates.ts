@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { getActor } from "@/lib/session";
 import type {
   AffiliateEngagement,
   AffiliateNiche,
@@ -11,11 +11,8 @@ import type {
 } from "@/lib/affiliates";
 
 async function currentActor() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return { supabase, actorId: user?.id ?? null };
+  const { supabase, userId } = await getActor();
+  return { supabase, actorId: userId };
 }
 
 function nullable(v: FormDataEntryValue | null): string | null {

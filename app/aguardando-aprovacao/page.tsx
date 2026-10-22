@@ -1,12 +1,11 @@
 import { logout } from "@/lib/actions/auth";
 import { InventMoneyLogo } from "@/app/_components/logo";
-import { createClient } from "@/lib/supabase/server";
+import { ThemeToggle } from "@/app/_components/theme-toggle";
+import { getSessionContext } from "@/lib/session";
+import { getTheme } from "@/lib/theme";
 
 export default async function AguardandoAprovacaoPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [{ email }, theme] = await Promise.all([getSessionContext(), getTheme()]);
 
   return (
     <div
@@ -19,11 +18,14 @@ export default async function AguardandoAprovacaoPage() {
         padding: "var(--space-6)",
       }}
     >
+      <div style={{ position: "fixed", top: 16, right: 16 }}>
+        <ThemeToggle compact initial={theme} />
+      </div>
       <div
         className="soft"
         style={{
           width: "min(440px, 100%)",
-          background: "#ffffff",
+          background: "var(--color-card)",
           borderRadius: "var(--r-card)",
           padding: "var(--space-8)",
           display: "flex",
@@ -58,9 +60,9 @@ export default async function AguardandoAprovacaoPage() {
           <p style={{ fontSize: 14, opacity: 0.7, margin: 0 }}>
             Seu cadastro foi recebido. Um administrador precisa aprovar seu acesso antes de você entrar no CRM.
           </p>
-          {user?.email && (
+          {email && (
             <p style={{ fontSize: 12, opacity: 0.55, marginTop: "var(--space-3)" }}>
-              Logado como <strong>{user.email}</strong>
+              Logado como <strong>{email}</strong>
             </p>
           )}
         </div>

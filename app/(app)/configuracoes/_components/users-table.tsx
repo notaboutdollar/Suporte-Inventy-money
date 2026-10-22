@@ -28,7 +28,7 @@ export function UsersTable({ users }: { users: UserRow[] }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
       {pending.length > 0 && (
-        <div className="soft" style={{ background: "#ffffff", borderRadius: "var(--r-card)", padding: "var(--space-6)" }}>
+        <div className="soft" style={{ background: "var(--color-card)", borderRadius: "var(--r-card)", padding: "var(--space-6)" }}>
           <div style={{ marginBottom: "var(--space-4)" }}>
             <h4 style={{ margin: "0 0 4px" }}>Aguardando aprovação</h4>
             <div style={{ fontSize: 12, opacity: 0.55 }}>
@@ -61,7 +61,7 @@ export function UsersTable({ users }: { users: UserRow[] }) {
         </div>
       )}
 
-      <div className="soft" style={{ background: "#ffffff", borderRadius: "var(--r-card)", padding: "var(--space-6)" }}>
+      <div className="soft" style={{ background: "var(--color-card)", borderRadius: "var(--r-card)", padding: "var(--space-6)" }}>
         <div style={{ marginBottom: "var(--space-4)" }}>
           <h4 style={{ margin: "0 0 4px" }}>Usuários ativos</h4>
           <div style={{ fontSize: 12, opacity: 0.55 }}>
@@ -139,7 +139,7 @@ function ApproveDialog({
         border: "none",
         borderRadius: "var(--r-card)",
         padding: "var(--space-6)",
-        background: "#ffffff",
+        background: "var(--color-card)",
         color: "var(--color-text)",
         maxWidth: 420,
         width: "calc(100vw - 32px)",

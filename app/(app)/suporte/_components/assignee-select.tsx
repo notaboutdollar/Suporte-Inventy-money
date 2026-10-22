@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateTicketAssignee } from "@/lib/actions/tickets";
 import type { Profile } from "@/lib/tickets";
@@ -15,24 +15,24 @@ export function AssigneeSelect({
   profiles: Profile[];
 }) {
   const [current, setCurrent] = useState<string | null>(value);
-  const [pending, startTransition] = useTransition();
+  const seq = useRef(0);
   const router = useRouter();
 
   return (
     <select
       value={current ?? ""}
-      disabled={pending}
       onChange={(e) => {
         const next = e.target.value || null;
+        const prev = current;
+        const token = ++seq.current;
         setCurrent(next);
-        startTransition(async () => {
-          try {
-            await updateTicketAssignee(ticketId, next);
-            router.refresh();
-          } catch {
-            setCurrent(value);
-          }
-        });
+        void updateTicketAssignee(ticketId, next)
+          .then(() => {
+            if (token === seq.current) router.refresh();
+          })
+          .catch(() => {
+            if (token === seq.current) setCurrent(prev);
+          });
       }}
       style={{
         border: "1px solid var(--color-neutral-200)",
@@ -40,7 +40,7 @@ export function AssigneeSelect({
         borderRadius: "var(--r-sm)",
         padding: "4px 22px 4px 8px",
         fontSize: 13,
-        cursor: pending ? "wait" : "pointer",
+        cursor: "pointer",
         font: "inherit",
         color: "var(--color-text)",
         appearance: "none",

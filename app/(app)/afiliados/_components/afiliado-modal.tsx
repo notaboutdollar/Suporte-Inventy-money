@@ -96,7 +96,7 @@ export const AfiliadoModal = forwardRef<AfiliadoModalHandle, { profiles: Profile
           border: "none",
           borderRadius: "var(--r-card)",
           padding: 0,
-          background: "#ffffff",
+          background: "var(--color-card)",
           color: "var(--color-text)",
           maxWidth: 640,
           width: "calc(100vw - 32px)",

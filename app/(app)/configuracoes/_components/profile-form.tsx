@@ -34,7 +34,7 @@ export function ProfileForm({
   }
 
   return (
-    <div className="soft" style={{ background: "#ffffff", borderRadius: "var(--r-card)", padding: "var(--space-6)" }}>
+    <div className="soft" style={{ background: "var(--color-card)", borderRadius: "var(--r-card)", padding: "var(--space-6)" }}>
       <h4 style={{ margin: "0 0 var(--space-4)" }}>Meu perfil</h4>
       <form ref={formRef} action={onSubmit} style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)", maxWidth: 480 }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--space-4)" }}>
@@ -67,8 +67,8 @@ export function ProfileForm({
           <div
             style={{
               fontSize: 13,
-              color: message.type === "ok" ? "#166a45" : "var(--color-accent-700)",
-              background: message.type === "ok" ? "#e6f6ee" : "var(--color-accent-100)",
+              color: message.type === "ok" ? "var(--color-ok)" : "var(--color-accent-700)",
+              background: message.type === "ok" ? "var(--color-ok-bg)" : "var(--color-accent-100)",
               borderRadius: "var(--r-sm)",
               padding: "var(--space-2) var(--space-3)",
             }}

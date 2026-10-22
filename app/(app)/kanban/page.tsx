@@ -1,23 +1,12 @@
 import Link from "next/link";
 import { PageHeader } from "../_components/page-header";
 import { KanbanBoard } from "./_components/kanban-board";
-import { createClient } from "@/lib/supabase/server";
-import type { ProfileRole } from "@/lib/roles";
+import { getSessionContext } from "@/lib/session";
 import { normalizeSocials, type Affiliate } from "@/lib/affiliates";
 
 export default async function KanbanPage() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  let canEdit = false;
-  if (user) {
-    const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    const role = (me?.role as ProfileRole | undefined) ?? "member";
-    canEdit = role === "admin" || role === "gerente";
-  }
+  const { supabase, role } = await getSessionContext();
+  const canEdit = role === "admin" || role === "gerente";
 
   const { data, error } = await supabase
     .from("affiliates")
@@ -76,7 +65,7 @@ export default async function KanbanPage() {
         <div
           className="soft"
           style={{
-            background: "#ffffff",
+            background: "var(--color-card)",
             borderRadius: "var(--r-card)",
             padding: "var(--space-6)",
             color: "var(--color-accent-700)",

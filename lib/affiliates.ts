@@ -89,13 +89,13 @@ export const STATUS_TAG_STYLE: Record<
   AffiliateStatus,
   { color: string; border: string; dot: string }
 > = {
-  novo: { color: "#1e6fd9", border: "#a9caf5", dot: "#1e6fd9" },
-  no_processo: { color: "#b06400", border: "#f5c98a", dot: "#e08a1f" },
-  em_negociacao: { color: "#8140c9", border: "#d9c1f5", dot: "#8140c9" },
-  ativo: { color: "#0f7b46", border: "#a5e0c0", dot: "#0f7b46" },
-  fechado: { color: "#166a45", border: "#89dcb6", dot: "#166a45" },
-  sem_resposta: { color: "#6b6b6b", border: "#cccccc", dot: "#8a8a8a" },
-  recusado: { color: "#b02a37", border: "#f2b5bb", dot: "#c73847" },
+  novo: { color: "var(--aff-novo)", border: "var(--aff-novo-border)", dot: "var(--aff-novo)" },
+  no_processo: { color: "var(--aff-processo)", border: "var(--aff-processo-border)", dot: "var(--aff-processo)" },
+  em_negociacao: { color: "var(--aff-negociacao)", border: "var(--aff-negociacao-border)", dot: "var(--aff-negociacao)" },
+  ativo: { color: "var(--aff-ativo)", border: "var(--aff-ativo-border)", dot: "var(--aff-ativo)" },
+  fechado: { color: "var(--aff-fechado)", border: "var(--aff-fechado-border)", dot: "var(--aff-fechado)" },
+  sem_resposta: { color: "var(--aff-sem)", border: "var(--aff-sem-border)", dot: "var(--aff-sem)" },
+  recusado: { color: "var(--aff-recusado)", border: "var(--aff-recusado-border)", dot: "var(--aff-recusado)" },
 };
 
 export const ORIGIN_ORDER: AffiliateOrigin[] = [
@@ -177,9 +177,9 @@ export const ENGAGEMENT_STYLE: Record<
   AffiliateEngagement,
   { color: string; bg: string }
 > = {
-  alto: { color: "#0f7b46", bg: "#dff5e8" },
-  medio: { color: "#b06400", bg: "#fceedd" },
-  baixo: { color: "#6b6b6b", bg: "#eaeaea" },
+  alto: { color: "var(--eng-alto)", bg: "var(--eng-alto-bg)" },
+  medio: { color: "var(--eng-medio)", bg: "var(--eng-medio-bg)" },
+  baixo: { color: "var(--eng-baixo)", bg: "var(--eng-baixo-bg)" },
 };
 
 export const SOCIAL_PLATFORM_ORDER: SocialPlatform[] = ["instagram", "youtube", "tiktok", "twitter"];

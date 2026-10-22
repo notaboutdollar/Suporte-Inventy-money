@@ -23,15 +23,14 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const userId = typeof claimsData?.claims?.sub === "string" ? claimsData.claims.sub : null;
 
   const path = request.nextUrl.pathname;
   const isPublic = path === "/login" || path === "/signup";
   const isPending = path === "/aguardando-aprovacao";
 
-  if (!user) {
+  if (!userId) {
     if (isPublic) return supabaseResponse;
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/login";
@@ -41,7 +40,7 @@ export async function updateSession(request: NextRequest) {
   const { data: profile } = await supabase
     .from("profiles")
     .select("approved")
-    .eq("id", user.id)
+    .eq("id", userId)
     .single();
   const approved = profile?.approved === true;
 

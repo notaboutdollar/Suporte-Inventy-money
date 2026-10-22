@@ -204,7 +204,7 @@ export default async function HistoricoPage() {
         <div
           className="soft"
           style={{
-            background: "#ffffff",
+            background: "var(--color-card)",
             borderRadius: "var(--r-card)",
             padding: "var(--space-6)",
             color: "var(--color-accent-700)",
@@ -215,7 +215,7 @@ export default async function HistoricoPage() {
       ) : events.length === 0 ? (
         <div
           className="soft"
-          style={{ background: "#ffffff", borderRadius: "var(--r-card)", padding: "var(--space-8)", textAlign: "center", opacity: 0.6 }}
+          style={{ background: "var(--color-card)", borderRadius: "var(--r-card)", padding: "var(--space-8)", textAlign: "center", opacity: 0.6 }}
         >
           Nenhuma atividade registrada ainda.
         </div>
@@ -225,7 +225,7 @@ export default async function HistoricoPage() {
             <div
               key={day}
               className="soft"
-              style={{ background: "#ffffff", borderRadius: "var(--r-card)", padding: "var(--space-6)" }}
+              style={{ background: "var(--color-card)", borderRadius: "var(--r-card)", padding: "var(--space-6)" }}
             >
               <h5 style={{ margin: "0 0 var(--space-4)", fontSize: 13, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.55 }}>
                 {day}
@@ -268,8 +268,8 @@ export default async function HistoricoPage() {
                             fontWeight: 600,
                             textTransform: "uppercase",
                             letterSpacing: "0.05em",
-                            color: e.origin === "ticket" ? "var(--color-accent-700)" : "#166a45",
-                            background: e.origin === "ticket" ? "var(--color-accent-100)" : "#e6f6ee",
+                            color: e.origin === "ticket" ? "var(--color-accent-700)" : "var(--color-ok)",
+                            background: e.origin === "ticket" ? "var(--color-accent-100)" : "var(--color-ok-bg)",
                             borderRadius: "var(--r-sm)",
                             padding: "2px 8px",
                           }}

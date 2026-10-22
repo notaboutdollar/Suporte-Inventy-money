@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   CATEGORY_COLORS,
   CATEGORY_LABELS,
@@ -42,6 +41,25 @@ export function SuporteWorkspace({
   canEdit: boolean;
 }) {
   const modalRef = useRef<TicketModalHandle>(null);
+  const [status, setStatus] = useState<TicketStatus | undefined>(activeStatus);
+  const visible = status ? tickets.filter((t) => t.status === status) : tickets;
+
+  useEffect(() => {
+    function onPop() {
+      const value = new URLSearchParams(window.location.search).get("status");
+      setStatus((value as TicketStatus | null) || undefined);
+    }
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+
+  function selectStatus(next?: TicketStatus) {
+    setStatus(next);
+    const url = new URL(window.location.href);
+    if (next) url.searchParams.set("status", next);
+    else url.searchParams.delete("status");
+    window.history.replaceState(null, "", `${url.pathname}${url.search}`);
+  }
 
   return (
     <>
@@ -59,7 +77,7 @@ export function SuporteWorkspace({
 
       <div
         className="soft"
-        style={{ background: "#ffffff", borderRadius: "var(--r-card)", padding: "var(--space-6)" }}
+        style={{ background: "var(--color-card)", borderRadius: "var(--r-card)", padding: "var(--space-6)" }}
       >
         <div
           style={{
@@ -73,19 +91,19 @@ export function SuporteWorkspace({
         >
           <h4 style={{ margin: 0 }}>Todos os tickets</h4>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <StatusFilterLink label="Todos" href="/suporte" active={!activeStatus} />
-            {STATUS_ORDER.map((status) => (
-              <StatusFilterLink
-                key={status}
-                label={STATUS_LABELS[status]}
-                href={`/suporte?status=${status}`}
-                active={activeStatus === status}
+            <StatusFilter label="Todos" active={!status} onClick={() => selectStatus(undefined)} />
+            {STATUS_ORDER.map((item) => (
+              <StatusFilter
+                key={item}
+                label={STATUS_LABELS[item]}
+                active={status === item}
+                onClick={() => selectStatus(item)}
               />
             ))}
           </div>
         </div>
 
-        {tickets.length === 0 ? (
+        {visible.length === 0 ? (
           <p style={{ opacity: 0.6, fontSize: 14, margin: 0, padding: "var(--space-6) 0", textAlign: "center" }}>
             Nenhum ticket encontrado.
           </p>
@@ -103,13 +121,13 @@ export function SuporteWorkspace({
               </tr>
             </thead>
             <tbody>
-              {tickets.map((t) => {
+              {visible.map((t) => {
                 const tag = STATUS_TAG_STYLE[t.status];
                 return (
                   <tr
                     key={t.id}
-                    onClick={canEdit ? () => modalRef.current?.openEdit(t) : undefined}
-                    style={{ cursor: canEdit ? "pointer" : "default" }}
+                    onClick={() => modalRef.current?.openEdit(t)}
+                    style={{ cursor: "pointer" }}
                   >
                     <td>{t.whatsapp || t.email || "—"}</td>
                     <td>
@@ -128,6 +146,11 @@ export function SuporteWorkspace({
                     </td>
                     <td style={{ maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {t.description}
+                      {t.attachments.length > 0 && (
+                        <span style={{ marginLeft: 8, fontSize: 11, opacity: 0.6 }}>
+                          {t.attachments.length === 1 ? "1 imagem" : `${t.attachments.length} imagens`}
+                        </span>
+                      )}
                     </td>
                     <td onClick={(e) => e.stopPropagation()}>
                       {canEdit ? (
@@ -163,16 +186,17 @@ export function SuporteWorkspace({
         )}
       </div>
 
-      {canEdit && <TicketModal ref={modalRef} profiles={profiles} />}
+      <TicketModal ref={modalRef} profiles={profiles} canEdit={canEdit} />
     </>
   );
 }
 
-function StatusFilterLink({ label, href, active }: { label: string; href: string; active: boolean }) {
+function StatusFilter({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
-    <Link
-      href={href}
+    <button
+      type="button"
       className="btn"
+      onClick={onClick}
       style={{
         fontSize: 12,
         padding: "6px 12px",
@@ -182,6 +206,6 @@ function StatusFilterLink({ label, href, active }: { label: string; href: string
       }}
     >
       {label}
-    </Link>
+    </button>
   );
 }

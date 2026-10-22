@@ -1,13 +1,9 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { PageHeader } from "./_components/page-header";
+import { CategoryChart } from "./_components/category-chart";
 import { createClient } from "@/lib/supabase/server";
-import {
-  CATEGORY_COLORS,
-  CATEGORY_LABELS,
-  CATEGORY_ORDER,
-  type TicketCategory,
-} from "@/lib/tickets";
+import { CATEGORY_ORDER, type TicketCategory } from "@/lib/tickets";
 import {
   NICHE_LABELS,
   ORIGIN_LABELS,
@@ -22,12 +18,6 @@ import {
 import { SocialLinkIcons } from "./_components/social-links";
 
 type Range = "week" | "month" | "all";
-
-const RANGE_LABEL: Record<Range, string> = {
-  week: "Semana",
-  month: "Mês",
-  all: "Total",
-};
 
 function startOfDay(d: Date) {
   const x = new Date(d);
@@ -59,7 +49,8 @@ export default async function DashboardPage({
   const supabase = await createClient();
   const today = startOfDay(new Date());
   const fourteenAgo = daysAgo(13);
-  const rangeStartDate = rangeStart(range);
+  const weekStart = rangeStart("week");
+  const monthStart = rangeStart("month");
 
   const openStatuses = ["solicitado", "em_andamento", "aguardando_cliente"];
   const activeAffStatuses = ["novo", "no_processo", "em_negociacao", "ativo"];
@@ -74,9 +65,7 @@ export default async function DashboardPage({
       .select("id", { count: "exact", head: true })
       .eq("status", "resolvido")
       .gte("updated_at", today.toISOString()),
-    (rangeStartDate
-      ? supabase.from("tickets").select("category").gte("created_at", rangeStartDate.toISOString())
-      : supabase.from("tickets").select("category")),
+    supabase.from("tickets").select("category, created_at"),
     supabase.from("tickets").select("created_at").gte("created_at", fourteenAgo.toISOString()),
     supabase.from("affiliates").select("id", { count: "exact", head: true }),
     supabase.from("affiliates").select("id", { count: "exact", head: true }).in("status", activeAffStatuses),
@@ -96,20 +85,20 @@ export default async function DashboardPage({
   const openCount = openRes.count ?? 0;
   const resolvedToday = resolvedTodayRes.count ?? 0;
 
-  const categoryCounts: Record<TicketCategory, number> = {
-    tarefa_sumiu: 0,
-    erro_gravacao: 0,
-    rejeicao_tarefa: 0,
-    saque: 0,
-    perfil_dados: 0,
-    indicacao: 0,
-    kyc: 0,
-    outro: 0,
-  };
-  for (const row of (categoryRes.data ?? []) as { category: TicketCategory }[]) {
-    if (row.category in categoryCounts) categoryCounts[row.category]++;
+  const categoryRows = (categoryRes.data ?? []) as { category: TicketCategory; created_at: string }[];
+  function tally(since: Date | null) {
+    const counts = Object.fromEntries(CATEGORY_ORDER.map((cat) => [cat, 0])) as Record<TicketCategory, number>;
+    for (const row of categoryRows) {
+      if (since && new Date(row.created_at) < since) continue;
+      if (row.category in counts) counts[row.category]++;
+    }
+    return { counts, max: Math.max(1, ...Object.values(counts)) };
   }
-  const maxCategory = Math.max(1, ...Object.values(categoryCounts));
+  const categorySeries = {
+    week: tally(weekStart),
+    month: tally(monthStart),
+    all: tally(null),
+  };
 
   const volumeByDay: { label: string; count: number; iso: string }[] = [];
   for (let i = 0; i < 14; i++) {
@@ -157,7 +146,7 @@ export default async function DashboardPage({
           <SectionHeader title="Suporte" href="/suporte" hrefLabel="Ver tickets" />
           <KpiRow openCount={openCount} resolvedToday={resolvedToday} />
           <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-6)", alignItems: "stretch" }}>
-            <CategoriesCard counts={categoryCounts} max={maxCategory} range={range} />
+            <CategoryChart initial={range} series={categorySeries} />
             <VolumeCard days={volumeByDay} max={maxVolume} />
           </div>
         </section>
@@ -178,6 +167,7 @@ function SectionHeader({ title, href, hrefLabel }: { title: string; href: string
       <h3 style={{ margin: 0 }}>{title}</h3>
       <Link
         href={href}
+        prefetch={true}
         style={{ fontSize: 13, color: "var(--color-accent)", textDecoration: "none", fontWeight: 600 }}
       >
         {hrefLabel} →
@@ -201,7 +191,7 @@ function AffKpiRow({
     <div
       className="soft"
       style={{
-        background: "#ffffff",
+        background: "var(--color-card)",
         borderRadius: "var(--r-card)",
         padding: "var(--space-6)",
         display: "grid",
@@ -233,7 +223,7 @@ function RecentAffiliatesCard({
   return (
     <div
       className="soft"
-      style={{ background: "#ffffff", borderRadius: "var(--r-card)", padding: "var(--space-6)", overflowX: "auto" }}
+      style={{ background: "var(--color-card)", borderRadius: "var(--r-card)", padding: "var(--space-6)", overflowX: "auto" }}
     >
       <div style={{ marginBottom: "var(--space-4)" }}>
         <h4 style={{ margin: "0 0 4px" }}>Criadores recentes</h4>
@@ -300,7 +290,7 @@ function KpiRow({ openCount, resolvedToday }: { openCount: number; resolvedToday
     <div
       className="soft"
       style={{
-        background: "#ffffff",
+        background: "var(--color-card)",
         borderRadius: "var(--r-card)",
         padding: "var(--space-6)",
         display: "grid",
@@ -331,7 +321,7 @@ function Kpi({
   hint?: string;
 }) {
   const bg =
-    tone === "accent" ? "var(--color-accent-100)" : tone === "green" ? "#e6f6ee" : "var(--color-neutral-100)";
+    tone === "accent" ? "var(--color-accent-100)" : tone === "green" ? "var(--color-ok-bg)" : "var(--color-neutral-100)";
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "var(--space-4)", minWidth: 0 }}>
       <div
@@ -344,7 +334,7 @@ function Kpi({
           alignItems: "center",
           justifyContent: "center",
           flex: "none",
-          color: tone === "green" ? "#166a45" : tone === "accent" ? "var(--color-accent-700)" : "var(--color-neutral-700)",
+          color: tone === "green" ? "var(--color-ok)" : tone === "accent" ? "var(--color-accent-700)" : "var(--color-neutral-700)",
         }}
       >
         {icon}
@@ -353,109 +343,6 @@ function Kpi({
         <div style={{ fontSize: 12, opacity: 0.6, marginBottom: 2 }}>{label}</div>
         <div style={{ fontFamily: "var(--font-heading)", fontWeight: 800, fontSize: 26, lineHeight: 1.05 }}>{value}</div>
         {hint && <div style={{ fontSize: 11, opacity: 0.5, marginTop: 2 }}>{hint}</div>}
-      </div>
-    </div>
-  );
-}
-
-function CategoriesCard({
-  counts,
-  max,
-  range,
-}: {
-  counts: Record<TicketCategory, number>;
-  max: number;
-  range: Range;
-}) {
-  return (
-    <div
-      className="soft"
-      style={{
-        background: "#ffffff",
-        borderRadius: "var(--r-card)",
-        padding: "var(--space-6)",
-        minWidth: 0,
-        flex: "1 1 460px",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          gap: "var(--space-4)",
-          flexWrap: "wrap",
-          marginBottom: "var(--space-6)",
-        }}
-      >
-        <div>
-          <h4 style={{ margin: "0 0 2px" }}>Ocorrências por categoria</h4>
-          <div style={{ fontSize: 12, opacity: 0.5 }}>{RANGE_LABEL[range]}</div>
-        </div>
-        <div style={{ display: "flex", gap: 4 }}>
-          {(["week", "month", "all"] as Range[]).map((r) => {
-            const active = r === range;
-            return (
-              <Link
-                key={r}
-                href={r === "week" ? "/" : `/?catRange=${r}`}
-                className="btn"
-                style={{
-                  fontSize: 12,
-                  padding: "6px 12px",
-                  background: active ? "var(--color-accent)" : "var(--color-neutral-100)",
-                  color: active ? "#ffffff" : "var(--color-text)",
-                  borderRadius: "var(--r-sm)",
-                }}
-              >
-                {RANGE_LABEL[r]}
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 12, height: 200 }}>
-        {CATEGORY_ORDER.map((cat) => {
-          const count = counts[cat];
-          const height = (count / max) * 180;
-          return (
-            <div
-              key={cat}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 8,
-                flex: 1,
-                height: "100%",
-                justifyContent: "flex-end",
-              }}
-            >
-              <div style={{ fontSize: 11, fontWeight: 600, color: CATEGORY_COLORS[cat] }}>{count || ""}</div>
-              <div
-                style={{
-                  width: "100%",
-                  height: Math.max(4, height),
-                  borderRadius: "var(--r-sm)",
-                  background: CATEGORY_COLORS[cat],
-                  opacity: count === 0 ? 0.15 : 1,
-                }}
-              />
-              <span
-                style={{
-                  fontSize: 10,
-                  opacity: 0.6,
-                  textAlign: "center",
-                  lineHeight: 1.1,
-                  minHeight: 22,
-                }}
-              >
-                {CATEGORY_LABELS[cat]}
-              </span>
-            </div>
-          );
-        })}
       </div>
     </div>
   );
@@ -473,7 +360,7 @@ function VolumeCard({ days, max }: { days: { label: string; count: number }[]; m
     <div
       className="soft"
       style={{
-        background: "#ffffff",
+        background: "var(--color-card)",
         borderRadius: "var(--r-card)",
         padding: "var(--space-6)",
         minWidth: 0,

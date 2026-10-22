@@ -1,4 +1,6 @@
+import { ThemeToggle } from "@/app/_components/theme-toggle";
 import { getSessionContext } from "@/lib/session";
+import { getTheme } from "@/lib/theme";
 
 async function greeting() {
   const { name } = await getSessionContext();
@@ -8,7 +10,7 @@ async function greeting() {
 }
 
 export async function PageHeader({ title }: { title: string }) {
-  const hello = await greeting();
+  const [hello, theme] = await Promise.all([greeting(), getTheme()]);
 
   return (
     <header
@@ -73,6 +75,8 @@ export async function PageHeader({ title }: { title: string }) {
           <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
         </svg>
       </button>
+
+      <ThemeToggle initial={theme} />
     </header>
   );
 }

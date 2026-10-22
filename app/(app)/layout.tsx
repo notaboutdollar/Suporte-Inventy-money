@@ -1,13 +1,9 @@
 import type { ReactNode } from "react";
 import { Sidebar } from "./_components/sidebar";
 import { getSessionContext } from "@/lib/session";
-import { getTheme } from "@/lib/theme";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
-  const [{ name: profileName, role: profileRole }, theme] = await Promise.all([
-    getSessionContext(),
-    getTheme(),
-  ]);
+  const { name: profileName, role: profileRole } = await getSessionContext();
 
   return (
     <div
@@ -19,7 +15,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         fontSize: 15,
       }}
     >
-      <Sidebar name={profileName} role={profileRole} theme={theme} />
+      <Sidebar name={profileName} role={profileRole} />
       <main
         style={{
           flex: 1,

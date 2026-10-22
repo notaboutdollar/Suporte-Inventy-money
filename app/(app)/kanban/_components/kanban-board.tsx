@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRef, useState } from "react";
 import { updateAffiliateStatus } from "@/lib/actions/affiliates";
 import {
   ENGAGEMENT_LABELS,
@@ -35,30 +34,21 @@ export function KanbanBoard({
   const [items, setItems] = useState<Affiliate[]>(affiliates);
   const [dragId, setDragId] = useState<string | null>(null);
   const [overCol, setOverCol] = useState<AffiliateStatus | null>(null);
-  const [pendingId, setPendingId] = useState<string | null>(null);
-  const [, startTransition] = useTransition();
-  const router = useRouter();
+  const seq = useRef(0);
 
   function onDropColumn(status: AffiliateStatus) {
     if (!dragId || !canEdit) return;
     const current = items.find((a) => a.id === dragId);
+    const movedId = dragId;
     setOverCol(null);
     setDragId(null);
     if (!current || current.status === status) return;
 
     const prev = items;
-    setItems(items.map((a) => (a.id === dragId ? { ...a, status } : a)));
-    setPendingId(dragId);
-
-    startTransition(async () => {
-      try {
-        await updateAffiliateStatus(current.id, status);
-        router.refresh();
-      } catch {
-        setItems(prev);
-      } finally {
-        setPendingId(null);
-      }
+    const token = ++seq.current;
+    setItems(items.map((a) => (a.id === movedId ? { ...a, status } : a)));
+    void updateAffiliateStatus(current.id, status).catch(() => {
+      if (token === seq.current) setItems(prev);
     });
   }
 
@@ -99,7 +89,7 @@ export function KanbanBoard({
             <div
               className="soft"
               style={{
-                background: "#ffffff",
+                background: "var(--color-card)",
                 borderTop: `3px solid ${style.dot}`,
                 borderRadius: "var(--r-card)",
                 padding: "var(--space-3) var(--space-4)",
@@ -136,7 +126,6 @@ export function KanbanBoard({
                     setDragId(null);
                     setOverCol(null);
                   }}
-                  pending={pendingId === card.id}
                 />
               ))}
             </div>
@@ -152,13 +141,11 @@ function KanbanCard({
   draggable,
   onDragStart,
   onDragEnd,
-  pending,
 }: {
   affiliate: Affiliate;
   draggable: boolean;
   onDragStart: () => void;
   onDragEnd: () => void;
-  pending: boolean;
 }) {
   const eng = affiliate.engagement ? ENGAGEMENT_STYLE[affiliate.engagement] : null;
   const followUp = isFollowUpToday(affiliate.follow_up_at);
@@ -173,14 +160,13 @@ function KanbanCard({
       onDragEnd={onDragEnd}
       className="soft"
       style={{
-        background: "#ffffff",
+        background: "var(--color-card)",
         borderRadius: "var(--r-card)",
         padding: "var(--space-3) var(--space-4)",
         display: "flex",
         flexDirection: "column",
         gap: 6,
         cursor: draggable ? "grab" : "default",
-        opacity: pending ? 0.55 : 1,
       }}
     >
       <div style={{ fontWeight: 700, fontSize: 14, lineHeight: 1.2 }}>{affiliate.name}</div>

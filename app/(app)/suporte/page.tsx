@@ -1,8 +1,7 @@
 import { PageHeader } from "../_components/page-header";
 import { SuporteWorkspace } from "./_components/suporte-workspace";
-import { createClient } from "@/lib/supabase/server";
-import type { ProfileRole } from "@/lib/roles";
-import type { Profile, Ticket, TicketStatus } from "@/lib/tickets";
+import { getSessionContext } from "@/lib/session";
+import type { Profile, Ticket, TicketAttachment, TicketStatus } from "@/lib/tickets";
 
 export default async function SuportePage({
   searchParams,
@@ -10,31 +9,17 @@ export default async function SuportePage({
   searchParams: Promise<{ status?: string }>;
 }) {
   const { status } = await searchParams;
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  let canEdit = false;
-  if (user) {
-    const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    const role = (me?.role as ProfileRole | undefined) ?? "member";
-    canEdit = role === "admin" || role === "moderator";
-  }
+  const { supabase, role } = await getSessionContext();
+  const canEdit = role === "admin" || role === "moderator";
 
   const profilesQuery = supabase.from("profiles").select("id, name").order("name");
 
-  let ticketsQuery = supabase
+  const ticketsQuery = supabase
     .from("tickets")
     .select(
-      "id, whatsapp, email, category, description, status, assignee_id, extra_data, created_at, assignee:profiles(name)"
+      "id, whatsapp, email, category, description, status, assignee_id, extra_data, created_at, assignee:profiles(name), attachments:ticket_attachments(id, storage_path, filename, mime, size)"
     )
     .order("created_at", { ascending: false });
-
-  if (status) {
-    ticketsQuery = ticketsQuery.eq("status", status);
-  }
 
   const [{ data: profilesData }, { data: ticketsData, error }] = await Promise.all([profilesQuery, ticketsQuery]);
   const profiles = (profilesData ?? []) as Profile[];
@@ -43,6 +28,7 @@ export default async function SuportePage({
     const r = row as Record<string, unknown>;
     const assigneeRaw = r.assignee as { name?: string } | { name?: string }[] | null;
     const assignee = Array.isArray(assigneeRaw) ? (assigneeRaw[0] ?? null) : assigneeRaw;
+    const attachmentsRaw = (r.attachments as TicketAttachment[] | null) ?? [];
     return {
       id: r.id as string,
       whatsapp: (r.whatsapp as string | null) ?? null,
@@ -53,6 +39,7 @@ export default async function SuportePage({
       assignee_id: (r.assignee_id as string | null) ?? null,
       assignee: assignee?.name ? { name: assignee.name } : null,
       extra_data: (r.extra_data as Ticket["extra_data"]) ?? null,
+      attachments: attachmentsRaw,
       created_at: r.created_at as string,
     };
   });
@@ -69,7 +56,7 @@ export default async function SuportePage({
         <div
           className="soft"
           style={{
-            background: "#ffffff",
+            background: "var(--color-card)",
             borderRadius: "var(--r-card)",
             padding: "var(--space-6)",
             color: "var(--color-accent-700)",

@@ -69,6 +69,14 @@ export type Profile = {
   name: string;
 };
 
+export type TicketAttachment = {
+  id: string;
+  storage_path: string;
+  filename: string;
+  mime: string | null;
+  size: number | null;
+};
+
 export type Ticket = {
   id: string;
   whatsapp: string | null;
@@ -79,8 +87,40 @@ export type Ticket = {
   assignee_id: string | null;
   assignee: { name: string } | null;
   extra_data: { notes?: string } | null;
+  attachments: TicketAttachment[];
   created_at: string;
 };
+
+export const TICKET_IMAGE_MIMES = ["image/jpeg", "image/png", "image/gif", "image/webp"] as const;
+export const MAX_TICKET_IMAGES = 4;
+export const MAX_TICKET_IMAGE_BYTES = 5 * 1024 * 1024;
+export const TICKET_ATTACHMENTS_BUCKET = "ticket-attachments";
+
+export function isTicketImageMime(mime: string) {
+  return (TICKET_IMAGE_MIMES as readonly string[]).includes(mime);
+}
+
+export function safeImageFilename(name: string) {
+  const base = name.split(/[/\\]/).pop() || "imagem";
+  const cleaned = base.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 80);
+  return cleaned || "imagem";
+}
+
+export function mimeFromFilename(name: string) {
+  const ext = name.split(".").pop()?.toLowerCase();
+  if (ext === "jpg" || ext === "jpeg") return "image/jpeg";
+  if (ext === "png") return "image/png";
+  if (ext === "gif") return "image/gif";
+  if (ext === "webp") return "image/webp";
+  return null;
+}
+
+const IMAGE_URL = /https?:\/\/[^\s<>"')]+?\.(?:png|jpe?g|gif|webp)(?:\?[^\s<>"')]+)?/gi;
+
+export function imageUrlsInText(text: string | null | undefined) {
+  if (!text) return [];
+  return [...new Set(text.match(IMAGE_URL) ?? [])];
+}
 
 export const STATUS_TAG_STYLE: Record<TicketStatus, { border: string; color: string; bg: string }> = {
   solicitado: {

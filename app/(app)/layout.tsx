@@ -1,28 +1,13 @@
 import type { ReactNode } from "react";
 import { Sidebar } from "./_components/sidebar";
-import { createClient } from "@/lib/supabase/server";
-import type { ProfileRole } from "@/lib/roles";
+import { getSessionContext } from "@/lib/session";
+import { getTheme } from "@/lib/theme";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  let profileName = user?.email?.split("@")[0] ?? "";
-  let profileRole: ProfileRole = "member";
-
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("name, role")
-      .eq("id", user.id)
-      .single();
-    if (profile) {
-      profileName = (profile.name as string) || profileName;
-      profileRole = profile.role as ProfileRole;
-    }
-  }
+  const [{ name: profileName, role: profileRole }, theme] = await Promise.all([
+    getSessionContext(),
+    getTheme(),
+  ]);
 
   return (
     <div
@@ -34,7 +19,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         fontSize: 15,
       }}
     >
-      <Sidebar name={profileName} role={profileRole} />
+      <Sidebar name={profileName} role={profileRole} theme={theme} />
       <main
         style={{
           flex: 1,

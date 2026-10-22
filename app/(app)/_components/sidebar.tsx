@@ -1,11 +1,13 @@
 "use client";
 
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
 import type { CSSProperties, ReactNode } from "react";
 import { logout } from "@/lib/actions/auth";
 import { InventMoneyLogo } from "@/app/_components/logo";
+import { ThemeToggle } from "@/app/_components/theme-toggle";
 import { ROLE_LABELS, type ProfileRole } from "@/lib/roles";
+import type { Theme } from "@/lib/theme";
 
 const NAV: { href: string; label: string; icon: ReactNode; roles: ProfileRole[] | null }[] = [
   { href: "/", label: "Dashboard", icon: <IconDashboard />, roles: null },
@@ -23,7 +25,7 @@ function initials(name: string) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-export function Sidebar({ name, role }: { name: string; role: ProfileRole }) {
+export function Sidebar({ name, role, theme }: { name: string; role: ProfileRole; theme: Theme }) {
   const pathname = usePathname();
 
   return (
@@ -35,7 +37,7 @@ export function Sidebar({ name, role }: { name: string; role: ProfileRole }) {
         display: "flex",
         flexDirection: "column",
         gap: "var(--space-6)",
-        background: "#ffffff",
+        background: "var(--color-card)",
         padding: "var(--space-6) var(--space-4)",
         borderRadius: "0 var(--r-card) var(--r-card) 0",
       }}
@@ -52,6 +54,7 @@ export function Sidebar({ name, role }: { name: string; role: ProfileRole }) {
       </nav>
 
       <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+        <ThemeToggle initial={theme} />
         <details>
           <summary
             style={{
@@ -123,11 +126,20 @@ function NavItem({
     : { background: "transparent", color: "var(--color-neutral-700)", borderRadius: "var(--r-sm)" };
 
   return (
-    <Link href={href} className="btn btn-block" style={style}>
-      <span style={{ marginRight: 10, display: "inline-flex" }}>{icon}</span>
-      {label}
-      <IconChevronRight style={{ marginLeft: "auto", opacity: 0.55 }} />
+    <Link href={href} prefetch={true} className="btn btn-block" style={style}>
+      <NavItemBody icon={icon} label={label} />
     </Link>
+  );
+}
+
+function NavItemBody({ icon, label }: { icon: ReactNode; label: string }) {
+  const { pending } = useLinkStatus();
+  return (
+    <>
+      <span style={{ marginRight: 10, display: "inline-flex", opacity: pending ? 0.55 : 1 }}>{icon}</span>
+      <span style={{ opacity: pending ? 0.7 : 1 }}>{label}</span>
+      <IconChevronRight style={{ marginLeft: "auto", opacity: pending ? 1 : 0.55 }} />
+    </>
   );
 }
 

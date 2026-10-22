@@ -3,6 +3,26 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
+function loginErrorMessage(error: { message: string; code?: string | null; name?: string }) {
+  const code = error.code ?? "";
+  const message = error.message.toLowerCase();
+  if (code === "email_not_confirmed" || message.includes("email not confirmed")) {
+    return "Confirme seu e-mail antes de entrar. Olhe a caixa de entrada.";
+  }
+  if (
+    error.name === "AuthRetryableFetchError" ||
+    code === "request_timeout" ||
+    message.includes("fetch failed") ||
+    message.includes("network") ||
+    message.includes("failed to fetch") ||
+    message.includes("timeout") ||
+    message.includes("econn")
+  ) {
+    return "Não foi possível conectar. Tente de novo em instantes.";
+  }
+  return "E-mail ou senha inválidos.";
+}
+
 export async function login(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -11,7 +31,7 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    redirect(`/login?error=${encodeURIComponent("E-mail ou senha inválidos.")}`);
+    redirect(`/login?error=${encodeURIComponent(loginErrorMessage(error))}`);
   }
 
   redirect("/");

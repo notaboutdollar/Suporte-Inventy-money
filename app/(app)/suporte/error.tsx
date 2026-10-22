@@ -17,7 +17,7 @@ export default function SuporteError({
     <div
       className="soft"
       style={{
-        background: "#ffffff",
+        background: "var(--color-card)",
         borderRadius: "var(--r-card)",
         padding: "var(--space-6)",
         margin: "var(--space-6) auto",

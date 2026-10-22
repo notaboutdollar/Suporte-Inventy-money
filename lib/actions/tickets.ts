@@ -1,14 +1,19 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
-import type { TicketCategory, TicketStatus } from "@/lib/tickets";
+import { getActor } from "@/lib/session";
+import {
+  isTicketImageMime,
+  MAX_TICKET_IMAGE_BYTES,
+  MAX_TICKET_IMAGES,
+  TICKET_ATTACHMENTS_BUCKET,
+  type TicketAttachment,
+  type TicketCategory,
+  type TicketStatus,
+} from "@/lib/tickets";
 
 async function currentActor() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return { supabase, actorId: user?.id ?? null };
+  const { supabase, userId } = await getActor();
+  return { supabase, actorId: userId };
 }
 
 function parseCreatedAt(input: string | null | undefined) {
@@ -62,6 +67,7 @@ export async function createTicket(formData: FormData) {
     console.error("[createTicket] event insert failed:", eventError);
   }
 
+  return ticket.id as string;
 }
 
 export async function updateTicket(id: string, formData: FormData) {
@@ -140,4 +146,66 @@ export async function updateTicketAssignee(id: string, assigneeId: string | null
     payload: { assignee_id: assigneeId },
   });
 
+}
+
+export async function addTicketAttachment(input: {
+  ticketId: string;
+  storagePath: string;
+  filename: string;
+  mime: string;
+  size: number;
+}): Promise<TicketAttachment> {
+  const ticketId = input.ticketId;
+  const storagePath = input.storagePath;
+  if (!/^[0-9a-f-]{36}$/i.test(ticketId)) throw new Error("Ticket inválido.");
+  if (!storagePath.startsWith(`${ticketId}/`) || storagePath.includes("..")) {
+    throw new Error("Caminho de imagem inválido.");
+  }
+  if (!isTicketImageMime(input.mime)) throw new Error("Use PNG, JPG, GIF ou WebP.");
+  if (!Number.isFinite(input.size) || input.size <= 0 || input.size > MAX_TICKET_IMAGE_BYTES) {
+    throw new Error("Cada imagem pode ter no máximo 5 MB.");
+  }
+
+  const { supabase } = await currentActor();
+  const { count, error: countError } = await supabase
+    .from("ticket_attachments")
+    .select("id", { count: "exact", head: true })
+    .eq("ticket_id", ticketId);
+  if (countError) throw new Error(countError.message);
+  if ((count ?? 0) >= MAX_TICKET_IMAGES) {
+    throw new Error("Um ticket pode ter no máximo 4 imagens.");
+  }
+
+  const filename = input.filename.trim().slice(0, 180) || "imagem";
+  const { data, error } = await supabase
+    .from("ticket_attachments")
+    .insert({
+      ticket_id: ticketId,
+      storage_path: storagePath,
+      filename,
+      mime: input.mime,
+      size: Math.round(input.size),
+    })
+    .select("id, storage_path, filename, mime, size")
+    .single();
+  if (error) throw new Error(error.message);
+  return data as TicketAttachment;
+}
+
+export async function removeTicketAttachment(id: string) {
+  const { supabase } = await currentActor();
+  const { data, error } = await supabase
+    .from("ticket_attachments")
+    .select("storage_path")
+    .eq("id", id)
+    .single();
+  if (error) throw new Error(error.message);
+
+  const { error: storageError } = await supabase.storage
+    .from(TICKET_ATTACHMENTS_BUCKET)
+    .remove([data.storage_path as string]);
+  if (storageError) throw new Error(storageError.message);
+
+  const { error: deleteError } = await supabase.from("ticket_attachments").delete().eq("id", id);
+  if (deleteError) throw new Error(deleteError.message);
 }

@@ -5,9 +5,7 @@ import { usePathname } from "next/navigation";
 import type { CSSProperties, ReactNode } from "react";
 import { logout } from "@/lib/actions/auth";
 import { InventMoneyLogo } from "@/app/_components/logo";
-import { ThemeToggle } from "@/app/_components/theme-toggle";
 import { ROLE_LABELS, type ProfileRole } from "@/lib/roles";
-import type { Theme } from "@/lib/theme";
 
 const NAV: { href: string; label: string; icon: ReactNode; roles: ProfileRole[] | null }[] = [
   { href: "/", label: "Dashboard", icon: <IconDashboard />, roles: null },
@@ -25,7 +23,7 @@ function initials(name: string) {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-export function Sidebar({ name, role, theme }: { name: string; role: ProfileRole; theme: Theme }) {
+export function Sidebar({ name, role }: { name: string; role: ProfileRole }) {
   const pathname = usePathname();
 
   return (
@@ -54,7 +52,6 @@ export function Sidebar({ name, role, theme }: { name: string; role: ProfileRole
       </nav>
 
       <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
-        <ThemeToggle initial={theme} />
         <details>
           <summary
             style={{

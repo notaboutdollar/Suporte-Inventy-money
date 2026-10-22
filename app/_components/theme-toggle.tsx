@@ -35,7 +35,7 @@ export function ThemeToggle({ initial = "light", compact = false }: { initial?: 
   return (
     <button
       type="button"
-      className={compact ? "btn btn-icon soft" : "btn btn-secondary btn-block"}
+      className={compact ? "btn btn-icon soft" : "btn soft"}
       onClick={toggle}
       aria-pressed={dark}
       aria-label={dark ? "Ativar modo claro" : "Ativar modo escuro"}
@@ -43,7 +43,16 @@ export function ThemeToggle({ initial = "light", compact = false }: { initial?: 
       style={
         compact
           ? { background: "var(--color-card)", borderRadius: "var(--r-md)", width: 42, height: 42 }
-          : { fontSize: 13, marginTop: 0 }
+          : {
+              fontSize: 13,
+              marginTop: 0,
+              height: 42,
+              flex: "none",
+              whiteSpace: "nowrap",
+              background: "var(--color-card)",
+              borderRadius: "var(--r-md)",
+              paddingInline: 14,
+            }
       }
     >
       {dark ? <SunIcon /> : <MoonIcon />}

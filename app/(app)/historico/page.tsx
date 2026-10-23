@@ -22,7 +22,7 @@ type Event = {
   id: string;
   origin: Origin;
   kind: EventKind;
-  payload: { from?: string; to?: string; assignee_id?: string | null } | null;
+  payload: { from?: string; to?: string; assignee_id?: string | null; send_to_invent?: boolean } | null;
   created_at: string;
   actor: { name: string } | null;
   ticket?: {
@@ -98,6 +98,13 @@ function renderTicketEvent(e: Event) {
         </>
       );
     case "edited":
+      if (e.payload && Object.keys(e.payload).length === 1 && typeof e.payload.send_to_invent === "boolean") {
+        return (
+          <>
+            <strong>{actor}</strong> {e.payload.send_to_invent ? "marcou" : "desmarcou"} o ticket para enviar pra Invent
+          </>
+        );
+      }
       return <><strong>{actor}</strong> editou o ticket</>;
     case "comment":
       return <><strong>{actor}</strong> comentou no ticket</>;

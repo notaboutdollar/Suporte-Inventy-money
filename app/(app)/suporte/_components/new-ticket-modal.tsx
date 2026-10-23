@@ -9,6 +9,7 @@ import {
   removeTicketAttachment,
   updateTicket,
 } from "@/lib/actions/tickets";
+import { SendToInventToggle } from "./send-to-invent-toggle";
 import { createClient } from "@/lib/supabase/client";
 import {
   CATEGORY_LABELS,
@@ -48,17 +49,20 @@ export const TicketModal = forwardRef<TicketModalHandle, { profiles: Profile[]; 
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [ticket, setTicket] = useState<Ticket | null>(null);
     const [files, setFiles] = useState<File[]>([]);
+    const [openKey, setOpenKey] = useState(0);
     const router = useRouter();
 
     useImperativeHandle(ref, () => ({
       openCreate() {
         setTicket(null);
         setFiles([]);
+        setOpenKey((key) => key + 1);
         dialogRef.current?.showModal();
       },
       openEdit(next) {
         setTicket(next);
         setFiles([]);
+        setOpenKey((key) => key + 1);
         dialogRef.current?.showModal();
       },
     }));
@@ -86,7 +90,7 @@ export const TicketModal = forwardRef<TicketModalHandle, { profiles: Profile[]; 
           }}
         >
           <TicketForm
-            key={ticket?.id ?? "new"}
+            key={openKey}
             ticket={ticket}
             profiles={profiles}
             canEdit={canEdit}
@@ -493,6 +497,8 @@ function TicketForm({
             </>
           )}
         </div>
+
+        <SendToInventToggle ticketId={ticket?.id || savedId || undefined} value={ticket?.send_to_invent ?? false} canEdit={canEdit} />
 
         <div className="field">
           <label htmlFor="status">Status</label>

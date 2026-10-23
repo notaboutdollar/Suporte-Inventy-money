@@ -12,6 +12,7 @@ import {
   type TicketStatus,
 } from "@/lib/tickets";
 import { AssigneeSelect } from "./assignee-select";
+import { SendToInventToggle } from "./send-to-invent-toggle";
 import { StatusSelect } from "./status-select";
 import { TicketModal, type TicketModalHandle } from "./new-ticket-modal";
 
@@ -42,7 +43,10 @@ export function SuporteWorkspace({
 }) {
   const modalRef = useRef<TicketModalHandle>(null);
   const [status, setStatus] = useState<TicketStatus | undefined>(activeStatus);
-  const visible = status ? tickets.filter((t) => t.status === status) : tickets;
+  const [flags, setFlags] = useState<Record<string, boolean>>({});
+  const visible = (status ? tickets.filter((t) => t.status === status) : tickets).map((ticket) =>
+    flags[ticket.id] === undefined ? ticket : { ...ticket, send_to_invent: flags[ticket.id] }
+  );
 
   useEffect(() => {
     function onPop() {
@@ -117,6 +121,7 @@ export function SuporteWorkspace({
                 <th>Responsável</th>
                 <th>Aberto</th>
                 <th>Tempo</th>
+                <th title="Enviar pra Invent">Invent</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -161,6 +166,15 @@ export function SuporteWorkspace({
                     </td>
                     <td style={{ whiteSpace: "nowrap" }}>{formatDate(t.created_at)}</td>
                     <td style={{ opacity: 0.65, whiteSpace: "nowrap" }}>{elapsed(t.created_at)}</td>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      <SendToInventToggle
+                        ticketId={t.id}
+                        value={t.send_to_invent}
+                        canEdit={canEdit}
+                        compact
+                        onUpdated={(next) => setFlags((current) => ({ ...current, [t.id]: next }))}
+                      />
+                    </td>
                     <td onClick={(e) => e.stopPropagation()}>
                       {canEdit ? (
                         <StatusSelect ticketId={t.id} value={t.status} />

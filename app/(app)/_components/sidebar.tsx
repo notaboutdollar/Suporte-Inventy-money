@@ -11,6 +11,7 @@ const NAV: { href: string; label: string; icon: ReactNode; roles: ProfileRole[] 
   { href: "/", label: "Dashboard", icon: <IconDashboard />, roles: null },
   { href: "/historico", label: "Histórico", icon: <IconClock />, roles: null },
   { href: "/suporte", label: "Suporte", icon: <IconLifeBuoy />, roles: ["admin", "moderator", "member"] },
+  { href: "/suporte/relatorio", label: "Relatório", icon: <IconReport />, roles: ["admin", "moderator", "member"] },
   { href: "/afiliados", label: "Criadores", icon: <IconUsers />, roles: ["admin", "gerente", "member"] },
   { href: "/kanban", label: "Kanban", icon: <IconKanban />, roles: ["admin", "gerente", "member"] },
   { href: "/configuracoes", label: "Configurações", icon: <IconSettings />, roles: null },
@@ -46,7 +47,7 @@ export function Sidebar({ name, role }: { name: string; role: ProfileRole }) {
 
       <nav style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
         {NAV.filter((item) => !item.roles || item.roles.includes(role)).map((item) => {
-          const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+          const active = navActive(item.href, pathname);
           return <NavItem key={item.href} href={item.href} label={item.label} icon={item.icon} active={active} />;
         })}
       </nav>
@@ -104,6 +105,18 @@ export function Sidebar({ name, role }: { name: string; role: ProfileRole }) {
         </div>
       </div>
     </aside>
+  );
+}
+
+function navActive(href: string, pathname: string) {
+  if (href === "/") return pathname === "/";
+  if (pathname === href) return true;
+  if (!pathname.startsWith(`${href}/`)) return false;
+  return !NAV.some(
+    (item) =>
+      item.href.length > href.length &&
+      item.href.startsWith(`${href}/`) &&
+      (pathname === item.href || pathname.startsWith(`${item.href}/`))
   );
 }
 
@@ -188,6 +201,16 @@ function IconKanban() {
       <rect x="3" y="3" width="5" height="18" rx="1" />
       <rect x="10" y="3" width="5" height="12" rx="1" />
       <rect x="17" y="3" width="4" height="8" rx="1" />
+    </svg>
+  );
+}
+function IconReport() {
+  return (
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="8" y1="13" x2="16" y2="13" />
+      <line x1="8" y1="17" x2="13" y2="17" />
     </svg>
   );
 }

@@ -1,7 +1,7 @@
 import { PageHeader } from "../_components/page-header";
 import { SuporteWorkspace } from "./_components/suporte-workspace";
 import { getSessionContext } from "@/lib/session";
-import type { Profile, Ticket, TicketAttachment, TicketStatus } from "@/lib/tickets";
+import { TICKET_LIST_SELECT, toTicket, type Profile, type TicketStatus } from "@/lib/tickets";
 
 export default async function SuportePage({
   searchParams,
@@ -14,35 +14,11 @@ export default async function SuportePage({
 
   const profilesQuery = supabase.from("profiles").select("id, name").order("name");
 
-  const ticketsQuery = supabase
-    .from("tickets")
-    .select(
-      "id, whatsapp, email, category, description, status, assignee_id, extra_data, created_at, assignee:profiles(name), attachments:ticket_attachments(id, storage_path, filename, mime, size)"
-    )
-    .order("created_at", { ascending: false });
+  const ticketsQuery = supabase.from("tickets").select(TICKET_LIST_SELECT).order("created_at", { ascending: false });
 
   const [{ data: profilesData }, { data: ticketsData, error }] = await Promise.all([profilesQuery, ticketsQuery]);
   const profiles = (profilesData ?? []) as Profile[];
-
-  const tickets: Ticket[] = (ticketsData ?? []).map((row) => {
-    const r = row as Record<string, unknown>;
-    const assigneeRaw = r.assignee as { name?: string } | { name?: string }[] | null;
-    const assignee = Array.isArray(assigneeRaw) ? (assigneeRaw[0] ?? null) : assigneeRaw;
-    const attachmentsRaw = (r.attachments as TicketAttachment[] | null) ?? [];
-    return {
-      id: r.id as string,
-      whatsapp: (r.whatsapp as string | null) ?? null,
-      email: (r.email as string | null) ?? null,
-      category: r.category as Ticket["category"],
-      description: (r.description as string) ?? "",
-      status: r.status as Ticket["status"],
-      assignee_id: (r.assignee_id as string | null) ?? null,
-      assignee: assignee?.name ? { name: assignee.name } : null,
-      extra_data: (r.extra_data as Ticket["extra_data"]) ?? null,
-      attachments: attachmentsRaw,
-      created_at: r.created_at as string,
-    };
-  });
+  const tickets = (ticketsData ?? []).map((row) => toTicket(row as Record<string, unknown>));
 
   if (error) {
     console.error("[/suporte] tickets query error:", error);

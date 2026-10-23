@@ -88,8 +88,32 @@ export type Ticket = {
   assignee: { name: string } | null;
   extra_data: { notes?: string } | null;
   attachments: TicketAttachment[];
+  send_to_invent: boolean;
   created_at: string;
 };
+
+export const TICKET_LIST_SELECT =
+  "id, whatsapp, email, category, description, status, assignee_id, extra_data, send_to_invent, created_at, assignee:profiles(name), attachments:ticket_attachments(id, storage_path, filename, mime, size)";
+
+export function toTicket(row: Record<string, unknown>): Ticket {
+  const assigneeRaw = row.assignee as { name?: string } | { name?: string }[] | null;
+  const assignee = Array.isArray(assigneeRaw) ? (assigneeRaw[0] ?? null) : assigneeRaw;
+  const attachmentsRaw = (row.attachments as TicketAttachment[] | null) ?? [];
+  return {
+    id: row.id as string,
+    whatsapp: (row.whatsapp as string | null) ?? null,
+    email: (row.email as string | null) ?? null,
+    category: row.category as TicketCategory,
+    description: (row.description as string) ?? "",
+    status: row.status as TicketStatus,
+    assignee_id: (row.assignee_id as string | null) ?? null,
+    assignee: assignee?.name ? { name: assignee.name } : null,
+    extra_data: (row.extra_data as Ticket["extra_data"]) ?? null,
+    attachments: attachmentsRaw,
+    send_to_invent: row.send_to_invent === true,
+    created_at: row.created_at as string,
+  };
+}
 
 export const TICKET_IMAGE_MIMES = ["image/jpeg", "image/png", "image/gif", "image/webp"] as const;
 export const MAX_TICKET_IMAGES = 4;

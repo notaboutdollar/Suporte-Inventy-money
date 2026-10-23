@@ -32,6 +32,7 @@ export async function createTicket(formData: FormData) {
   const created_at = parseCreatedAt(formData.get("created_at") as string);
   const notes = (formData.get("notes") as string) || "";
   const status = ((formData.get("status") as TicketStatus) || "solicitado") as TicketStatus;
+  const send_to_invent = formData.get("send_to_invent") === "on";
 
   const { supabase, actorId } = await currentActor();
 
@@ -41,6 +42,7 @@ export async function createTicket(formData: FormData) {
     category,
     description,
     status,
+    send_to_invent,
     extra_data: notes ? { notes } : {},
     assignee_id,
   };
@@ -79,6 +81,7 @@ export async function updateTicket(id: string, formData: FormData) {
   const created_at = parseCreatedAt(formData.get("created_at") as string);
   const notes = (formData.get("notes") as string) || "";
   const status = formData.get("status") as TicketStatus;
+  const send_to_invent = formData.get("send_to_invent") === "on";
 
   const { supabase, actorId } = await currentActor();
 
@@ -88,6 +91,7 @@ export async function updateTicket(id: string, formData: FormData) {
     category,
     description,
     status,
+    send_to_invent,
     extra_data: notes ? { notes } : {},
     assignee_id,
   };
@@ -131,6 +135,20 @@ export async function deleteTicket(id: string) {
   if (count === 0) {
     throw new Error("Sem permissão pra excluir. Apenas admins podem excluir tickets.");
   }
+}
+
+export async function updateTicketSendToInvent(id: string, sendToInvent: boolean) {
+  const { supabase, actorId } = await currentActor();
+
+  const { error } = await supabase.from("tickets").update({ send_to_invent: sendToInvent }).eq("id", id);
+  if (error) throw new Error(error.message);
+
+  await supabase.from("ticket_events").insert({
+    ticket_id: id,
+    actor_id: actorId,
+    kind: "edited",
+    payload: { send_to_invent: sendToInvent },
+  });
 }
 
 export async function updateTicketAssignee(id: string, assigneeId: string | null) {

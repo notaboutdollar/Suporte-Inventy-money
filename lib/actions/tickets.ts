@@ -1,15 +1,24 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { getActor } from "@/lib/session";
 import {
   isTicketImageMime,
   MAX_TICKET_IMAGE_BYTES,
   MAX_TICKET_IMAGES,
+  STATUS_ORDER,
   TICKET_ATTACHMENTS_BUCKET,
   type TicketAttachment,
   type TicketCategory,
   type TicketStatus,
 } from "@/lib/tickets";
+
+function revalidateTicketViews() {
+  revalidatePath("/");
+  revalidatePath("/suporte");
+  revalidatePath("/suporte/relatorio");
+  revalidatePath("/historico");
+}
 
 async function currentActor() {
   const { supabase, userId } = await getActor();
@@ -97,32 +106,51 @@ export async function updateTicket(id: string, formData: FormData) {
   };
   if (created_at) updatePayload.created_at = created_at;
 
-  const { error } = await supabase.from("tickets").update(updatePayload).eq("id", id);
+  const { data, error } = await supabase.from("tickets").update(updatePayload).eq("id", id).select("id").maybeSingle();
   if (error) throw new Error(error.message);
+  if (!data) {
+    throw new Error("Sem permissão pra salvar. Apenas admins e moderadores podem atualizar tickets.");
+  }
 
-  await supabase.from("ticket_events").insert({
+  const { error: eventError } = await supabase.from("ticket_events").insert({
     ticket_id: id,
     actor_id: actorId,
     kind: "edited",
     payload: {},
   });
+  if (eventError) console.error("[updateTicket] event insert failed:", eventError);
+
+  revalidateTicketViews();
 }
 
 export async function updateTicketStatus(id: string, status: TicketStatus) {
-  const { supabase, actorId } = await currentActor();
+  if (!STATUS_ORDER.includes(status)) return { error: "Status inválido." };
 
-  const { data: previous } = await supabase.from("tickets").select("status").eq("id", id).single();
+  try {
+    const { supabase, actorId } = await currentActor();
+    const { data: previous } = await supabase.from("tickets").select("status").eq("id", id).maybeSingle();
 
-  const { error } = await supabase.from("tickets").update({ status }).eq("id", id);
-  if (error) throw new Error(error.message);
+    const { data, error } = await supabase.from("tickets").update({ status }).eq("id", id).select("id").maybeSingle();
+    if (error) return { error: error.message };
+    if (!data) {
+      return {
+        error: "Sem permissão pra alterar o status. Apenas admins e moderadores podem atualizar tickets.",
+      };
+    }
 
-  await supabase.from("ticket_events").insert({
-    ticket_id: id,
-    actor_id: actorId,
-    kind: "status_change",
-    payload: { from: previous?.status ?? null, to: status },
-  });
+    const { error: eventError } = await supabase.from("ticket_events").insert({
+      ticket_id: id,
+      actor_id: actorId,
+      kind: "status_change",
+      payload: { from: previous?.status ?? null, to: status },
+    });
+    if (eventError) console.error("[updateTicketStatus] event insert failed:", eventError);
 
+    revalidateTicketViews();
+  } catch (err) {
+    console.error("[updateTicketStatus] failed:", err);
+    return { error: err instanceof Error ? err.message : "Não foi possível mudar o status." };
+  }
 }
 
 export async function deleteTicket(id: string) {

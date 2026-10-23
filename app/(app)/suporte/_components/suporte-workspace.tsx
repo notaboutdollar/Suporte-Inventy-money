@@ -44,9 +44,14 @@ export function SuporteWorkspace({
   const modalRef = useRef<TicketModalHandle>(null);
   const [status, setStatus] = useState<TicketStatus | undefined>(activeStatus);
   const [flags, setFlags] = useState<Record<string, boolean>>({});
-  const visible = (status ? tickets.filter((t) => t.status === status) : tickets).map((ticket) =>
-    flags[ticket.id] === undefined ? ticket : { ...ticket, send_to_invent: flags[ticket.id] }
-  );
+  const [statuses, setStatuses] = useState<Record<string, TicketStatus>>({});
+  const localized = tickets.map((ticket) => {
+    let next = ticket;
+    if (flags[ticket.id] !== undefined) next = { ...next, send_to_invent: flags[ticket.id] };
+    if (statuses[ticket.id] !== undefined) next = { ...next, status: statuses[ticket.id] };
+    return next;
+  });
+  const visible = status ? localized.filter((ticket) => ticket.status === status) : localized;
 
   useEffect(() => {
     function onPop() {
@@ -177,7 +182,12 @@ export function SuporteWorkspace({
                     </td>
                     <td onClick={(e) => e.stopPropagation()}>
                       {canEdit ? (
-                        <StatusSelect ticketId={t.id} value={t.status} />
+                        <StatusSelect
+                          key={`${t.id}-${t.status}`}
+                          ticketId={t.id}
+                          value={t.status}
+                          onUpdated={(next) => setStatuses((current) => ({ ...current, [t.id]: next }))}
+                        />
                       ) : (
                         <span
                           className="tag"

@@ -8,6 +8,7 @@ import {
   deleteTicket,
   removeTicketAttachment,
   updateTicket,
+  updateTicketStatus,
 } from "@/lib/actions/tickets";
 import { SendToInventToggle } from "./send-to-invent-toggle";
 import { createClient } from "@/lib/supabase/client";
@@ -26,6 +27,7 @@ import {
   type Profile,
   type Ticket,
   type TicketAttachment,
+  type TicketStatus,
 } from "@/lib/tickets";
 
 function localInputValue(iso?: string) {
@@ -138,7 +140,32 @@ function TicketForm({
   const [attachments, setAttachments] = useState<TicketAttachment[]>(ticket?.attachments ?? []);
   const [description, setDescription] = useState(ticket?.description ?? "");
   const [notes, setNotes] = useState(ticket?.extra_data?.notes ?? "");
+  const [status, setStatus] = useState<TicketStatus>(ticket?.status ?? "solicitado");
+  const statusSeq = useRef(0);
   const router = useRouter();
+
+  async function onStatusChange(next: TicketStatus) {
+    const prev = status;
+    const token = ++statusSeq.current;
+    setStatus(next);
+    const id = ticket?.id || savedId;
+    if (!canEdit || !id) return;
+    setError(null);
+    try {
+      const result = await updateTicketStatus(id, next);
+      if (token !== statusSeq.current) return;
+      if (result?.error) {
+        setStatus(prev);
+        setError(result.error);
+        return;
+      }
+      router.refresh();
+    } catch (err) {
+      if (token !== statusSeq.current) return;
+      setStatus(prev);
+      setError(err instanceof Error ? err.message : "Não foi possível mudar o status.");
+    }
+  }
 
   const previews = useMemo(
     () => files.map((file) => ({ name: file.name, url: URL.createObjectURL(file) })),
@@ -502,7 +529,14 @@ function TicketForm({
 
         <div className="field">
           <label htmlFor="status">Status</label>
-          <select className="input" id="status" name="status" disabled={!canEdit} defaultValue={ticket?.status ?? "solicitado"}>
+          <select
+            className="input"
+            id="status"
+            name="status"
+            disabled={!canEdit}
+            value={status}
+            onChange={(e) => void onStatusChange(e.target.value as TicketStatus)}
+          >
             {STATUS_ORDER.map((s) => (
               <option key={s} value={s}>
                 {STATUS_LABELS[s]}
@@ -513,6 +547,7 @@ function TicketForm({
 
         {error && (
           <div
+            role="alert"
             style={{
               fontSize: 13,
               color: "var(--color-accent-700)",
